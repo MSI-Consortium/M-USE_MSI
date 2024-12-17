@@ -56,6 +56,8 @@ namespace USE_Def_Namespace
         /// </summary>
         public Dictionary<string, string> TaskIcons;
 
+        public string ExptFolderPath;
+
         /// <summary>
         /// Path to the external folder containing the contexts for the session.
         /// </summary>
@@ -253,6 +255,8 @@ namespace USE_Def_Namespace
         /// Duration of the SessionSummary screen before the session finishes.
         /// </summary>
         public float SessionSummaryDuration = 180f;
+
+        public bool UseDigilentDevice;
     }
 
     public class TaskDef
@@ -363,6 +367,13 @@ namespace USE_Def_Namespace
         /// Whether or not to run a stimulation
         /// </summary>
         public bool RunSimulation;
+        
+        /// <summary>
+        /// Whether or not the task has an associated instruction video to play at start.
+        /// </summary>
+        public bool TaskInstructionsVideoActive;
+
+        public string TaskInstructionsVideoPath;
 
     }
 

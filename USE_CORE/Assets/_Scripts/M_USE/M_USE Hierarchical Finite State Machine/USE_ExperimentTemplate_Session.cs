@@ -653,10 +653,10 @@ namespace USE_ExperimentTemplate_Session
                     }
                     else if(Session.UsingDefaultConfigs)
                     {
-                        image.texture = Resources.Load<Texture2D>($"{Session.SessionDef.TaskIconsFolderPath}/{taskName}");
+                        image.texture = Resources.Load<Texture2D>($"{Session.SessionDef.TaskIconsFolderPath}/{configName}");
                     }
                     else if(Session.UsingLocalConfigs)
-                        image.texture = LoadExternalPNG(Session.SessionDef.TaskIconsFolderPath + Path.DirectorySeparatorChar + taskName + ".png");
+                        image.texture = LoadExternalPNG(Session.SessionDef.TaskIconsFolderPath + Path.DirectorySeparatorChar + configName + ".png");
 
 
                     // If guided task selection, only make the next icon interactable
@@ -1017,6 +1017,9 @@ namespace USE_ExperimentTemplate_Session
 
                 if (Session.SessionDef != null && Session.SessionDef.SerialPortActive && Session.SerialPortController != null)
                     Session.SerialPortController.ClosePort();
+                
+                if(Session.SessionDef.UseDigilentDevice)
+                    Session.digilent_controller.CloseScope();
 
             });
             saveData.AddTimer(() => 2.5f, () => null);
