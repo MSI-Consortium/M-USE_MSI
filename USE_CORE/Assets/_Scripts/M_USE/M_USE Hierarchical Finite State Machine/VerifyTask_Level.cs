@@ -78,29 +78,6 @@ public class VerifyTask_Level : ControlLevel
                 new SettingsDetails(TaskLevel.TaskConfigPath, "EventCode", typeof(Dictionary<string, EventCode>)),
                 new SettingsDetails(TaskLevel.TaskConfigPath, "ConfigUi", typeof(ConfigVarStore)),
             };
-            
-            
-            if (Session.UseDefaultLocalPaths)
-            {
-                UpdateConfig(TaskLevel.TaskConfigPath, "TaskDef", "ExternalStimFolderPath",
-                    "\"" + Session.ExptFolderPath + "/Resources/" + TaskLevel.TaskName + "/Stimuli\"");
-                // UpdateConfig(TaskLevel.TaskConfigPath, "TaskDef", "TaskInstructionsVideoPath",
-                //     "\"" + Session.ExptFolderPath + "/Resources/" + TaskLevel.TaskName + "/Instructions/InstructionVideo.mp4\"");
-                UpdateConfig(TaskLevel.TaskConfigPath, "TaskDef", "TaskInstructionsPreVideoSlidesFolderPath",
-                    "\"" + Session.ExptFolderPath + "/Resources/" + TaskLevel.TaskName + "/Instructions/PreVideoSlides\"");
-                UpdateConfig(TaskLevel.TaskConfigPath, "TaskDef", "TaskInstructionsPostVideoSlidesFolderPath",
-                    "\"" + Session.ExptFolderPath + "/Resources/" + TaskLevel.TaskName + "/Instructions/PostVideoSlides\"");
-                UpdateConfig(TaskLevel.TaskConfigPath, "TaskDef", "InterBlockSlidePath",
-                    "\"" + Session.ExptFolderPath + "/Resources/" + TaskLevel.TaskName + "/Instructions/InterblockSlides\"");
-                UpdateConfig(TaskLevel.TaskConfigPath, "TaskDef", "InterBlockVideoPath",
-                    "\"" + Session.ExptFolderPath + "/Resources/" + TaskLevel.TaskName + "/Instructions/Break.mp4\"");
-                //This should be in specific task level, not here...
-                UpdateConfig(TaskLevel.TaskConfigPath, "TaskDef", "LongTimeWarningSlidePath",
-                "\"" + Session.ExptFolderPath + "/Resources/" + TaskLevel.TaskName + "/Instructions/LongTimeWarningSlides\"");
-                UpdateConfig(TaskLevel.TaskConfigPath, "TaskDef", "ShortTimeWarningSlidePath",
-                    "\"" + Session.ExptFolderPath + "/Resources/" + TaskLevel.TaskName + "/Instructions/ShortTimeWarningSlides\"");
-                
-            }
 
             TaskLevel.customSettings = new List<CustomSettings>();
             TaskLevel.DefineCustomSettings();
@@ -144,7 +121,6 @@ public class VerifyTask_Level : ControlLevel
                     }
                     else if (currentType.Equals(TaskLevel.TrialDefType))
                     {
-                        
                         MethodInfo SettingsConverter_methodTask = GetType()
                             .GetMethod(nameof(this.SettingsConverterTrial)).MakeGenericMethod(new Type[] {currentType});
                         SettingsConverter_methodTask.Invoke(this, new object[] {parsedResult});
@@ -218,11 +194,6 @@ public class VerifyTask_Level : ControlLevel
 
         FindStims.AddSpecificInitializationMethod(() =>
         {
-            if (Session.SessionDef.ParticipantDistance_CM != 0)
-                USE_CoordinateConverter.SetEyeDistance(Session.SessionDef.ParticipantDistance_CM);
-            else
-                USE_CoordinateConverter.SetEyeDistance(60);
-            
             TaskLevel.TaskStims = new TaskStims();
             TaskLevel.PrefabStims ??= new StimGroup("PrefabStims");
             TaskLevel.PreloadedStims ??= new StimGroup("PreloadedStims");
@@ -293,9 +264,7 @@ public class VerifyTask_Level : ControlLevel
         if (Session.UsingDefaultConfigs)
             TaskLevel.PrefabStims = new StimGroup("PrefabStims", (T[]) parsedSettings);
         else if (Session.UsingLocalConfigs || Session.UsingServerConfigs)
-        {
-            TaskLevel.ExternalStims = new StimGroup("ExternalStims", (T[])parsedSettings);
-        }
+            TaskLevel.ExternalStims = new StimGroup("ExternalStims", (T[]) parsedSettings);
     }
 
     public T SettingsConverterCustom<T>(object parsedSettings)
@@ -305,62 +274,6 @@ public class VerifyTask_Level : ControlLevel
     public T[] SettingsConverterCustomArray<T>(object parsedSettings)
     {
         return (T[])parsedSettings;
-    }
-    
-    public static void UpdateConfig(string ConfigFolderPath, string ConfigFileSearchString, string VarName, string NewValue)
-    {
-        // Get all files in the directory that match the search string
-        string[] files = Directory.GetFiles(ConfigFolderPath, $"*{ConfigFileSearchString}*");
-
-        if (files.Length == 0)
-        {
-            Console.WriteLine("No files found matching the search string.");
-            return;
-        }
-
-        foreach (string file in files)
-        {
-            string[] lines = File.ReadAllLines(file);
-            bool found = false;
-
-            for (int i = 0; i < lines.Length; i++)
-            {
-                // Check if the line contains the variable name
-                if (lines[i].Contains(VarName))
-                {
-                    string[] parts = lines[i].Split('\t');
-
-                    for (int j = 0; j < parts.Length; j++)
-                    {
-                        if (parts[j] == VarName && j + 1 < parts.Length)
-                        {
-                            // Replace the value after the variable name with the new value
-                            parts[j + 1] = NewValue;
-                            found = true;
-                            break;
-                        }
-                    }
-
-                    // Reconstruct the line with the new value
-                    if (found)
-                    {
-                        lines[i] = string.Join("\t", parts);
-                        break;
-                    }
-                }
-            }
-
-            if (found)
-            {
-                // Write the updated lines back to the file
-                File.WriteAllLines(file, lines);
-                Console.WriteLine($"Updated {file}");
-            }
-            else
-            {
-                Console.WriteLine($"Variable name '{VarName}' not found in {file}");
-            }
-        }
     }
     
     // public void SettingsConverterCustomArray<T>(T[] parsedSettings, CustomSettings customSetting)

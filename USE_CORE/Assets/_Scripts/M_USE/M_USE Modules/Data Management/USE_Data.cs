@@ -620,7 +620,6 @@ namespace USE_Data
 					Directory.CreateDirectory(folderPath);
 					using StreamWriter dataStream = File.CreateText(folderPath + Path.DirectorySeparatorChar + fileName);
 					dataStream.Write(fileHeaders);
-					dataStream.Close();
 
 					fileCreated = true;
 				}
@@ -644,7 +643,6 @@ namespace USE_Data
 					{
 						using StreamWriter dataStream = File.AppendText(folderPath + Path.DirectorySeparatorChar + fileName);
 						dataStream.Write("\n" + content);
-						dataStream.Close();
 					}
 					else
 						writeDataNextFrame = true;

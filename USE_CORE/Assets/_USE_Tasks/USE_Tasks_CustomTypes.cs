@@ -43,7 +43,6 @@ using KeepTrack_Namespace;
 using FruitRunner_Namespace;
 using THRQ_Namespace;
 using AudioVisual_Namespace;
-using SRT_Namespace;
 //#END OF USING DIRECTIVES - DO NOT DELETE THIS LINE#
 
 
@@ -240,17 +239,6 @@ static public class USE_Tasks_CustomTypes
                 BlockDefType = typeof(AudioVisual_BlockDef),
                 TrialDefType = typeof(AudioVisual_TrialDef),
                 StimDefType = typeof(AudioVisual_StimDef)
-            }
-        }
-        ,{
-            "SRT", new TaskTypes
-            {
-                TaskLevelType = typeof(SRT_TaskLevel),
-                TrialLevelType = typeof(SRT_TrialLevel),
-                TaskDefType = typeof(SRT_TaskDef),
-                BlockDefType = typeof(SRT_BlockDef),
-                TrialDefType = typeof(SRT_TrialDef),
-                StimDefType = typeof(SRT_StimDef)
             }
         }
 //#END OF CUSTOMTASKTYPES DICTIONARY - DO NOT DELETE THIS LINE#

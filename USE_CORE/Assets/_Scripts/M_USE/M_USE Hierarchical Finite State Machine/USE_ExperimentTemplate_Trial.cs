@@ -103,7 +103,6 @@ namespace USE_ExperimentTemplate_Trial
         [HideInInspector] public SliderFBController SliderFBController;
         [HideInInspector] public MaskController MaskFBController;
         [HideInInspector] public DialogueController DialogueController;
-        [HideInInspector] public Digilent_Controller digilent_controller;
 
         [HideInInspector] public Dictionary<string, EventCode> TaskEventCodes;
         
