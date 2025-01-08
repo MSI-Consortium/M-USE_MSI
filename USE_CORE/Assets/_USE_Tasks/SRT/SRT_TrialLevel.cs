@@ -43,14 +43,15 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
     public override void DefineControlLevel()
     {
         State PreStim = new State("PreStim");
-        State AudioPrep = new State("AudioPrep");
+        State AudioTactilePrep = new State("AudioPrep");
+        State TactilePrep = new State("TactilePrep");
         State StimPresentation = new State("StimPresentation");
         State Response = new State("Response");
         State Feedback = new State("Feedback");
         State TimeWarning = new State("TimeWarning");
         
         State nextState = new State("nextState"); 
-        AddActiveStates(new List<State> { PreStim, AudioPrep, StimPresentation, Response, Feedback, TimeWarning, nextState });
+        AddActiveStates(new List<State> { PreStim, AudioTactilePrep, TactilePrep, StimPresentation, Response, Feedback, TimeWarning, nextState });
         
         SimpleTrialData = (SRT_SimpleTrialData)Session.SessionDataControllers
             .InstantiateDataController<SRT_SimpleTrialData>(
@@ -176,7 +177,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             audioDelay = CurrentTrial.AudioStim_Index == null
                 ? 0
                 : GetTaskDef<SRT_TaskDef>().VisualDelayOnAvTrials;
-            nextState = CurrentTrial.AudioStim_Index == null ? StimPresentation : AudioPrep;
+            nextState = CurrentTrial.AudioStim_Index == null && CurrentTrial.TactileStim_Index == null ? StimPresentation : AudioTactilePrep;
             if(Session.SessionDef.UseDigilentDevice)
                 digilent_controller.StartRecording();
         });
@@ -194,8 +195,8 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         });
         PreStim.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
 
-        AudioPrep.StateInitializationFinished += PlaySound;
-        AudioPrep.AddUpdateMethod(() =>
+        AudioTactilePrep.StateInitializationFinished += PlaySound;
+        AudioTactilePrep.AddUpdateMethod(() =>
         {
             if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
                     CurrentTrial.ResponseChar.ToUpper())))
@@ -204,8 +205,8 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
                 RT = null;
             }
         });
-        AudioPrep.AddTimer(()=> GetTaskDef<SRT_TaskDef>().VisualDelayOnAvTrials, StimPresentation);
-        AudioPrep.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
+        AudioTactilePrep.AddTimer(()=> GetTaskDef<SRT_TaskDef>().VisualDelayOnAvTrials, StimPresentation);
+        AudioTactilePrep.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
         
         // StimPresentation.AddDefaultInitializationMethod
         StimPresentation.StateInitializationFinished += ResizeStim;
@@ -221,9 +222,12 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         });
         StimPresentation.AddTimer(()=>CurrentTrial.Stim_Dur, Response, () =>
         {
-            
+            //send tactile stim off signal
         });
-        StimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
+        StimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback, ()=>
+        {
+            //send tactile stim off signal
+        });
         
         Response.AddDefaultInitializationMethod(()=>
         {
@@ -293,7 +297,11 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         if (CurrentTrial.AudioStim_Index != null)
             targetStimDef.StimGameObject.GetComponent<AudioSource>().PlayOneShot(CurrentTaskLevel.AudioClips[
                 CurrentTrial.AudioStim_Index.Value - CurrentTaskLevel.CurrentBlock.AudioStimIndices.Min()]);
-        
+        if (CurrentTrial.TactileStim_Index != null)
+        {
+            //trigger tactile stim
+        }
+
     }
 
     private void ResizeStim(object sender, EventArgs e)

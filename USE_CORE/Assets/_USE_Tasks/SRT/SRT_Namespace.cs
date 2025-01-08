@@ -44,6 +44,7 @@ namespace SRT_Namespace
         public float Resp_MaxDur;
         public int[] VisualStimIndices;
         public int[] AudioStimIndices;
+        public int[] TactileStimIndices;
         public int FixCrossStimIndex;
         public string ResponseChar;
         public int N_Trials;
@@ -189,6 +190,7 @@ namespace SRT_Namespace
         public Vector3 AudioStim_Loc;
         public int? VisualStim_Index;
         public int? AudioStim_Index;
+        public int? TactileStim_Index;
         public int FixCrossStimIndex;
         public string ResponseChar;
         public float VisualStimDVA;
@@ -196,6 +198,9 @@ namespace SRT_Namespace
 
     public class SRT_StimDef : StimDef
     {
+        public float StimFreq;
+        public string StimType;
+        
         public int AudioStimIndex;
         //Already-existing fields (inherited from Stim  Def)
         //public Dictionary<string, StimGroup> StimGroups; //stimulus type field (e.g. sample/target/irrelevant/etc)

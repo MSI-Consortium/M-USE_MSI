@@ -25,6 +25,8 @@ public class SRT_TaskLevel : ControlLevel_Task_Template
         Add_ControlLevel_InitializationMethod(() =>
         {
             USE_CoordinateConverter.SetEyeDistance(60);
+            //initialize serrial port for tactile stims
+            //Session.SerialPortController.Initialize();
         });
         
         SetupBlock.AddDefaultInitializationMethod(() =>
