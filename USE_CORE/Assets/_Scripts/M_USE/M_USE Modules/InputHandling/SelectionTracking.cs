@@ -73,6 +73,7 @@ namespace SelectionTracking
             {
                 if (ActiveSelectionHandlers[key].HandlerActive)
                 {
+                    Debug.Log(key);
                     ActiveSelectionHandlers[key].UpdateSelections();
                 }
             }

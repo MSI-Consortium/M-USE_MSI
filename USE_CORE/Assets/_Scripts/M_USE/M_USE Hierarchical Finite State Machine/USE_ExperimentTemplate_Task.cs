@@ -49,6 +49,8 @@ namespace USE_ExperimentTemplate_Task
 {
     public abstract class ControlLevel_Task_Template : ControlLevel
     {
+        
+        public List<config_ui_var> taskdef_ui_vars;
         public string ConfigFolderName;
         public string TaskName;
         public string TaskProjectFolder;
@@ -118,7 +120,10 @@ namespace USE_ExperimentTemplate_Task
 
         public Type TaskLevelType;
         public Type TrialLevelType, TaskDefType, BlockDefType, TrialDefType, StimDefType;
-        protected State VerifyTask, SetupTask, RunBlock, BlockFeedback, FinishTask;
+        protected State TaskInstructions, SetupBlock,RunBlock, BlockFeedback, FinishTask;
+        
+        protected bool InitBlockAsyncFinished;
+        protected bool blockFeedbackFinished = true;
         protected bool TaskFbFinished;
         public TaskLevelTemplate_Methods TaskLevel_Methods;
         public List<GameObject> ActiveSceneElements;
@@ -172,11 +177,13 @@ namespace USE_ExperimentTemplate_Task
 
             TaskLevel_Methods = new TaskLevelTemplate_Methods();
 
+            TaskInstructions = new State("TaskInstructions");
+            SetupBlock = new State("SetupBlock");
             RunBlock = new State("RunBlock");
             BlockFeedback = new State("BlockFeedback");
             FinishTask = new State("FinishTask");
             RunBlock.AddChildLevel(TrialLevel);
-            AddActiveStates(new List<State> { RunBlock, BlockFeedback, FinishTask });
+            AddActiveStates(new List<State> { TaskInstructions, SetupBlock, RunBlock, BlockFeedback, FinishTask });
 
             TrialLevel.TrialDefType = TrialDefType;
             TrialLevel.StimDefType = StimDefType;
@@ -185,6 +192,10 @@ namespace USE_ExperimentTemplate_Task
 
             Add_ControlLevel_InitializationMethod(() =>
             {
+                if (TaskDef.TaskInstructionsVideoActive)
+                    TaskDef.TaskInstructionsVideoPath =  Session.ExptFolderPath + "/Resources/" + TaskName + "/Instructions/PracticeIntro.mp4";
+                if (GameObject.Find(TaskName + "_ConfigUpdateCanvas"))
+                    GameObject.Find(TaskName + "_ConfigUpdateCanvas").SetActive(false);
                 if(TaskLoadingControllerGO == null)
                 {
                     TaskLoadingControllerGO = Instantiate(Resources.Load<GameObject>("LoadingCanvas_New"));
@@ -226,9 +237,9 @@ namespace USE_ExperimentTemplate_Task
                         configUI = FindObjectOfType<ConfigUI>();
                     configUI.clear();
                     if (ConfigUiVariables != null)
-                        configUI.store = ConfigUiVariables;
+                        configUI.config_var_store = ConfigUiVariables;
                     else
-                        configUI.store = new ConfigVarStore();
+                        configUI.config_var_store = new ConfigVarStore();
                     configUI.GenerateUI();
                 }
 
@@ -333,8 +344,8 @@ namespace USE_ExperimentTemplate_Task
             {
                StartCoroutine(FrameData.AppendDataToBuffer());
             });
-            BlockFeedback.SpecifyTermination(() => true && BlockCount < BlockDefs.Length - 1, RunBlock);
-            BlockFeedback.SpecifyTermination(() => true && BlockCount == BlockDefs.Length - 1, FinishTask);
+            BlockFeedback.SpecifyTermination(() => blockFeedbackFinished && BlockCount < BlockDefs.Length - 1, SetupBlock);
+            BlockFeedback.SpecifyTermination(() => blockFeedbackFinished && BlockCount == BlockDefs.Length - 1, FinishTask);
             BlockFeedback.AddDefaultTerminationMethod(() =>
             {
                 SetTaskSummaryString();

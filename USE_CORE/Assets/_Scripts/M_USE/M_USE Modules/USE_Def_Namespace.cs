@@ -27,6 +27,7 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using TMPro;
 using UnityEngine;
 using USE_DisplayManagement;
 using USE_ExperimentTemplate_Trial;
@@ -55,6 +56,8 @@ namespace USE_Def_Namespace
         /// Represents a dictionary of task mappings where the key is the config folder name and the value is the name of the task icons in the TaskIconsFolderPath.
         /// </summary>
         public Dictionary<string, string> TaskIcons;
+
+        public string ExptFolderPath;
 
         /// <summary>
         /// Path to the external folder containing the contexts for the session.
@@ -253,6 +256,8 @@ namespace USE_Def_Namespace
         /// Duration of the SessionSummary screen before the session finishes.
         /// </summary>
         public float SessionSummaryDuration = 180f;
+
+        public bool UseDigilentDevice;
     }
 
     public class TaskDef
@@ -363,8 +368,16 @@ namespace USE_Def_Namespace
         /// Whether or not to run a stimulation
         /// </summary>
         public bool RunSimulation;
+        
+        /// <summary>
+        /// Whether or not the task has an associated instruction video to play at start.
+        /// </summary>
+        public bool TaskInstructionsVideoActive;
+
+        public string TaskInstructionsVideoPath;
 
     }
+
 
     public class BlockDef
     {

@@ -54,6 +54,7 @@ public static class Session
     public static bool UsingServerConfigs;
     public static bool StoringDataLocally;
     public static bool StoringDataOnServer;
+    public static bool UseDefaultLocalPaths = true;
     public static bool StoreData
     {
         get
@@ -87,6 +88,8 @@ public static class Session
     public static string SessionDataPath;
     public static string TaskSelectionDataPath;
     public static string FilePrefix;
+    public static string ResourcesFolderPath;
+    public static string ExptFolderPath;
 
     public static SerialRecvData SerialRecvData;
     public static SerialSentData SerialSentData;
@@ -98,6 +101,7 @@ public static class Session
     public static TobiiEyeTrackerController TobiiEyeTrackerController;
     public static GameObject InputManager;
     public static FlashPanelController FlashPanelController;
+    public static Digilent_Controller digilent_controller;
 
     public static EventCodeManager EventCodeManager;
 

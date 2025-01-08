@@ -41,7 +41,7 @@ public class TestConfigUI : MonoBehaviour {
         jsonSaveLoad.isRelative = false;
 
         var configStore = jsonSaveLoad.LoadObject<ConfigVarStore>("config", false);
-        configUI.store = configStore;
+        configUI.config_var_store = configStore;
 
         configUI.GenerateUI();
 	}
