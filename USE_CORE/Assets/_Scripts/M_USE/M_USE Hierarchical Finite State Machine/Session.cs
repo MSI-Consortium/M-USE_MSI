@@ -88,6 +88,7 @@ public static class Session
     public static string SessionDataPath;
     public static string TaskSelectionDataPath;
     public static string FilePrefix;
+    public static string ConfigFolderPath;
     public static string ResourcesFolderPath;
     public static string ExptFolderPath;
 
@@ -109,7 +110,6 @@ public static class Session
 
     public static ApplicationQuit ApplicationQuit;
     
-    public static string ConfigFolderPath;
 
     public static SyncBoxController SyncBoxController;
     public static SerialPortThreaded SerialPortController;

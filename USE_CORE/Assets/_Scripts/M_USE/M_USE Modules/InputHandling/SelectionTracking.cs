@@ -73,7 +73,6 @@ namespace SelectionTracking
             {
                 if (ActiveSelectionHandlers[key].HandlerActive)
                 {
-                    Debug.Log(key);
                     ActiveSelectionHandlers[key].UpdateSelections();
                 }
             }
@@ -462,7 +461,7 @@ namespace SelectionTracking
                 if (currentTarget != null && !FixateOnEventCodeSent && LastSelection.SelectedGameObject != currentTarget) //The last AND is so that it wont send if selection is made. 
                 {
                     //Debug.LogWarning("FIXATION ON");
-                    Session.EventCodeManager.CheckForAndSendEventCode(currentTarget, "FixationOn");
+                    Session.EventCodeManager.CheckForAndSendEventCode(currentTarget, "HoverOn");
                     FixateOnEventCodeSent = true;
                 }
 

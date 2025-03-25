@@ -282,7 +282,9 @@ public class InitScreen_Level : ControlLevel
         if (LocalConfig_Toggle.isOn)
         {
             Session.UsingLocalConfigs = true;
-            Session.ConfigFolderPath = Session.LocateFile.GetPath("Config Folder");
+            Session.ExptFolderPath = Session.LocateFile.GetPath("Experiment Folder");
+            Session.ConfigFolderPath = Session.ExptFolderPath + Path.DirectorySeparatorChar + "Configs";
+            Session.ResourcesFolderPath = Session.ExptFolderPath + Path.DirectorySeparatorChar + "Resources";
         }
         else if (ServerConfig_Toggle.isOn)
         {
@@ -409,16 +411,16 @@ public class InitScreen_Level : ControlLevel
             SettingsButton_GO.GetComponent<Button>().onClick.AddListener(HandleSettingButtonClicked);
 
             //SETUP FILE ITEMS FOR BOTH ConfigFolder & DataFolder:
-            FileSpec configFileSpec = new FileSpec
+            FileSpec exptFileSpec = new FileSpec
             {
-                name = "Config Folder",
+                name = "Experiment Folder",
                 isFolder = true
             };
-            Session.LocateFile.AddToFilesDict(configFileSpec); //add to locatefile files dict
-            TMP_InputField configInputField = LocalConfig_GO.GetComponentInChildren<TMP_InputField>();
-            FileItem_TMP configFileItem = LocalConfig_GO.AddComponent<FileItem_TMP>();
-            configFileItem.ManualStart(configFileSpec, configInputField, LocalConfigText);
-            LocalConfig_GO.GetComponentInChildren<Button>().onClick.AddListener(configFileItem.Locate);
+            Session.LocateFile.AddToFilesDict(exptFileSpec); //add to locatefile files dict
+            TMP_InputField exptInputField = LocalConfig_GO.GetComponentInChildren<TMP_InputField>();
+            FileItem_TMP exptFileItem = LocalConfig_GO.AddComponent<FileItem_TMP>();
+            exptFileItem.ManualStart(exptFileSpec, exptInputField, LocalConfigText);
+            LocalConfig_GO.GetComponentInChildren<Button>().onClick.AddListener(exptFileItem.Locate);
 
             FileSpec dataFileSpec = new FileSpec
             {

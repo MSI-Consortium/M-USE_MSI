@@ -183,7 +183,7 @@ namespace USE_ExperimentTemplate_Task
             BlockFeedback = new State("BlockFeedback");
             FinishTask = new State("FinishTask");
             RunBlock.AddChildLevel(TrialLevel);
-            AddActiveStates(new List<State> { TaskInstructions, SetupBlock, RunBlock, BlockFeedback, FinishTask });
+            AddActiveStates(new List<State> { SetupBlock, RunBlock, BlockFeedback, FinishTask });//TaskInstructions, SetupBlock, RunBlock, BlockFeedback, FinishTask });
 
             TrialLevel.TrialDefType = TrialDefType;
             TrialLevel.StimDefType = StimDefType;
@@ -192,6 +192,7 @@ namespace USE_ExperimentTemplate_Task
 
             Add_ControlLevel_InitializationMethod(() =>
             {
+                StartCoroutine(TurnOffLoadingCanvas());
                 if (TaskDef.TaskInstructionsVideoActive)
                     TaskDef.TaskInstructionsVideoPath =  Session.ExptFolderPath + "/Resources/" + TaskName + "/Instructions/PracticeIntro.mp4";
                 if (GameObject.Find(TaskName + "_ConfigUpdateCanvas"))
@@ -274,21 +275,18 @@ namespace USE_ExperimentTemplate_Task
                 if (Session.SessionDef.FlashPanelsActive)
                     GameObject.Find("UI_Canvas").GetComponent<Canvas>().worldCamera = TaskCam;
 
-            });
-
-            //RunBlock State-----------------------------------------------------------------------------------------------------
-            RunBlock.AddUniversalInitializationMethod(() =>
-            {
                 TaskCam.gameObject.SetActive(true);
-
-                StartCoroutine(TurnOffLoadingCanvas());
 
                 //For web build have to start each task with DirectionalLight off since only 1 display so all tasks verified during task selection scene and causing lighting issues.
                 if (TaskDirectionalLight != null)
                 {
                     TaskDirectionalLight.SetActive(true);  
                 }
-
+            });
+            
+            SetupBlock.AddUniversalInitializationMethod(() =>
+            {
+                
                 BlockCount++;
 
                 NumAbortedTrials_InBlock = 0;
@@ -296,7 +294,6 @@ namespace USE_ExperimentTemplate_Task
                 TotalTouches_InBlock = 0;
                 TotalIncompleteTouches_InBlock = 0;
                 Session.MouseTracker.ResetClicks();
-
                 CurrentBlockDef = BlockDefs[BlockCount];
 
                 TrialLevel.BlockCount = BlockCount;
@@ -313,6 +310,12 @@ namespace USE_ExperimentTemplate_Task
 
                 TrialLevel.ForceBlockEnd = false;
                 TrialLevel.ReachedCriterion = false;
+            });
+            SetupBlock.SpecifyTermination(()=> true, RunBlock);
+
+            //RunBlock State-----------------------------------------------------------------------------------------------------
+            RunBlock.AddUniversalInitializationMethod(() =>
+            {
 
                 Session.EventCodeManager.SendRangeCode("RunBlockStarts", BlockCount);
             });

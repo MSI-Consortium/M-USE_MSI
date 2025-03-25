@@ -35,7 +35,7 @@ public class SRT_TaskLevel : ControlLevel_Task_Template
             AudioClips = new List<AudioClip>();
             foreach (int iStim in CurrentBlock.AudioStimIndices)
             {
-                string audioFilePath = ExternalStims.stimDefs[iStim].FileName;
+                string audioFilePath = Session.ResourcesFolderPath + Path.DirectorySeparatorChar + "SRT/Stimuli/Audio" + Path.DirectorySeparatorChar + ExternalStims.stimDefs[iStim].FileName;
                 StartCoroutine(ConvertFilesToAudioClip(audioFilePath));
             }
         });

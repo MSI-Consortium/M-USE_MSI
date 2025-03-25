@@ -23,7 +23,9 @@ public class SlidePlayer_Level : ControlLevel
     {
         State LoadSlides = new State("LoadSlides");
         State PlaySlide = new State("PlaySlide");
+        Debug.Log("sgsdfg");
         AddActiveStates(new List<State> { LoadSlides, PlaySlide });
+        Debug.Log("sgsdfasdgffgdsafhg");
 
         bool imgSlides = false;
         bool textSlides = false;
