@@ -39,19 +39,20 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
     public SRT_SimpleTrialData SimpleTrialData;
     public DigilentDataController DigilentDataController;
     private int TrialModality, A_stim, V_stim = 0;
+    public CaterpillarControl catControl;
 
     public override void DefineControlLevel()
     {
         State PreStim = new State("PreStim");
-        State AudioTactilePrep = new State("AudioPrep");
+        State AudioStimPresentation = new State("AudioPrep");
         State TactilePrep = new State("TactilePrep");
-        State StimPresentation = new State("StimPresentation");
+        State VisualTactileStimPresentation = new State("StimPresentation");
         State Response = new State("Response");
         State Feedback = new State("Feedback");
         State TimeWarning = new State("TimeWarning");
         
         State nextState = new State("nextState"); 
-        AddActiveStates(new List<State> { PreStim, AudioTactilePrep, TactilePrep, StimPresentation, Response, Feedback, TimeWarning, nextState });
+        AddActiveStates(new List<State> { PreStim, AudioStimPresentation, TactilePrep, VisualTactileStimPresentation, Response, Feedback, TimeWarning, nextState });
         
         SimpleTrialData = (SRT_SimpleTrialData)Session.SessionDataControllers
             .InstantiateDataController<SRT_SimpleTrialData>(
@@ -60,6 +61,8 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         SimpleTrialData.fileName = filePrefix + "__SimpleTrialData.txt";
         SimpleTrialData.InitDataController();
         SimpleTrialData.ManuallyDefine();
+
+        catControl = CurrentTaskLevel.catControl;
         
         
         if (Session.SessionDef.UseDigilentDevice)
@@ -174,10 +177,14 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         {
             RT = null;
             ResponseString = "";
+            
+            //Need to rework to handle AV, VT, AT trials
             audioDelay = CurrentTrial.AudioStim_Index == null
                 ? 0
                 : GetTaskDef<SRT_TaskDef>().VisualDelayOnAvTrials;
-            nextState = CurrentTrial.AudioStim_Index == null && CurrentTrial.TactileStim_Index == null ? StimPresentation : AudioTactilePrep;
+            
+            
+            nextState = CurrentTrial.AudioStim_Index == null && CurrentTrial.TactileStim_Index == null ? VisualTactileStimPresentation : AudioStimPresentation;
             if(Session.SessionDef.UseDigilentDevice)
                 digilent_controller.StartRecording();
         });
@@ -190,13 +197,16 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
                 RT = null;
             }
         });
+        
+        //replace audioDelay with general purpose delay
         PreStim.AddTimer(()=>CurrentTrial.PreStimDur - audioDelay, ()=> nextState, () =>
         {
         });
         PreStim.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
 
-        AudioTactilePrep.StateInitializationFinished += PlaySound;
-        AudioTactilePrep.AddUpdateMethod(() =>
+        //Handle both tactile and visual stimuli?
+        AudioStimPresentation.StateInitializationFinished += PlaySound;
+        AudioStimPresentation.AddUpdateMethod(() =>
         {
             if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
                     CurrentTrial.ResponseChar.ToUpper())))
@@ -205,28 +215,31 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
                 RT = null;
             }
         });
-        AudioTactilePrep.AddTimer(()=> GetTaskDef<SRT_TaskDef>().VisualDelayOnAvTrials, StimPresentation);
-        AudioTactilePrep.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
+        AudioStimPresentation.AddTimer(()=> GetTaskDef<SRT_TaskDef>().VisualDelayOnAvTrials, VisualTactileStimPresentation);
+        AudioStimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
         
         // StimPresentation.AddDefaultInitializationMethod
-        StimPresentation.StateInitializationFinished += ResizeStim;
+        //Assuming for now that visual/tactile delay is minimal
+        VisualTactileStimPresentation.StateInitializationFinished += PrepareAudioTactileStim;
         
-        StimPresentation.AddUpdateMethod(() =>
+        VisualTactileStimPresentation.AddUpdateMethod(() =>
         {
             if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
                     CurrentTrial.ResponseChar.ToUpper())))
             {
                 ResponseString = "Responded";
-                RT = Time.time - StimPresentation.TimingInfo.StartTimeAbsolute;
+                RT = Time.time - VisualTactileStimPresentation.TimingInfo.StartTimeAbsolute;
             }
         });
-        StimPresentation.AddTimer(()=>CurrentTrial.Stim_Dur, Response, () =>
+        VisualTactileStimPresentation.AddTimer(()=>CurrentTrial.Stim_Dur, Response, () =>
         {
             //send tactile stim off signal
+            catControl.TurnTactileStimOff();
         });
-        StimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback, ()=>
+        VisualTactileStimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback, ()=>
         {
             //send tactile stim off signal
+            catControl.TurnTactileStimOff();
         });
         
         Response.AddDefaultInitializationMethod(()=>
@@ -241,7 +254,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
                     CurrentTrial.ResponseChar.ToUpper())))
             {
                 ResponseString = "Responded";
-                RT = Time.time - StimPresentation.TimingInfo.StartTimeAbsolute;
+                RT = Time.time - VisualTactileStimPresentation.TimingInfo.StartTimeAbsolute;
                     
             }
         });
@@ -304,7 +317,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
 
     }
 
-    private void ResizeStim(object sender, EventArgs e)
+    private void PrepareAudioTactileStim(object sender, EventArgs e)
     {
         if (CurrentTrial.VisualStim_Index != null)
         {
@@ -313,6 +326,8 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, TrialStims[0].stimDefs[0].StimSizePixels[0]);
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, TrialStims[0].stimDefs[0].StimSizePixels[1]);
         }
+        if (CurrentTrial.TactileStim_Index != null)
+            catControl.TurnTactileStimOn();
     }
     
     protected override void DefineTrialStims()
