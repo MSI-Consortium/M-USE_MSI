@@ -3,7 +3,7 @@ using System.IO.Ports;
 // using System;
 // using System.Buffers;
 
-public class CaterpillarControl //collisionTrigger //: MonoBehaviour
+public class CaterpillarControl : MonoBehaviour
 {
     public SerialPort _serialPort;
     private byte[] onCat;

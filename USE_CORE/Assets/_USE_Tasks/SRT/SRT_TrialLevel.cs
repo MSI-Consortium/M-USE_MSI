@@ -46,7 +46,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         State PreStim = new State("PreStim");
         State AudioStimPresentation = new State("AudioPrep");
         State TactilePrep = new State("TactilePrep");
-        State VisualTactileStimPresentation = new State("StimPresentation");
+        State VisualTactileStimPresentation = new State("VisualTactileStimPresentation");
         State Response = new State("Response");
         State Feedback = new State("Feedback");
         State TimeWarning = new State("TimeWarning");
@@ -342,8 +342,8 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         {
             StimGroup visStims = new StimGroup("VisStim", availableStims, new List<int> { CurrentTrial.VisualStim_Index.Value });
             visStims.SetLocations(new List<Vector3> { CurrentTrial.VisualStim_Loc });
-            visStims.SetVisibilityOnOffStates(GetStateFromName("StimPresentation"),
-                GetStateFromName("StimPresentation"));
+            visStims.SetVisibilityOnOffStates(GetStateFromName("VisualTactileStimPresentation"),
+                GetStateFromName("VisualTactileStimPresentation"));
             // if (visStims.stimDefs[0].StimGameObject != null)
             //     visStims.stimDefs[0].StimAudioSource = visStims.stimDefs[0].StimGameObject.AddComponent<AudioSource>();
             // _audioSource = visStims.stimDefs[0].StimAudioSource;

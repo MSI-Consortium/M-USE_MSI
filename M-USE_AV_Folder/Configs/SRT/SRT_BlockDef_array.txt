@@ -1,13 +1,12 @@
-BlockCount	N_Trials	PreStim_MinDur	PreStim_MaxDur	Stim_Dur	Resp_MaxDur	VisualStimIndices	AudioStimIndices	FixCrossStimIndex	VisualStimDVA	ResponseChar	ContextName
-1	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-2	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-3	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-4	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-5	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-6	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-7	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-8	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-9	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-10	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-11	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
-12	30	1	2	0.5	3	[0,1,2]	[3,4,5]	6	2	a	BackdropGrey.png
+BlockCount	N_Trials	PreStim_MinDur	PreStim_MaxDur	Stim_Dur	Resp_MaxDur	VisualStimIndices	AudioStimIndices	TactileStimIndices	FixCrossStimIndex	VisualStimDVA	ResponseChar	ContextName
+1	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+2	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+3	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+4	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+5	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+6	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+7	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+8	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+9	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+10	30	1	2	0.5	3	[0]	[3]	[0]	6	2	a	BackdropGrey.png
+
