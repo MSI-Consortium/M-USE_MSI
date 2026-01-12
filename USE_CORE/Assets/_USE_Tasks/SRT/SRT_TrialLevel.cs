@@ -220,7 +220,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         
         // StimPresentation.AddDefaultInitializationMethod
         //Assuming for now that visual/tactile delay is minimal
-        VisualTactileStimPresentation.StateInitializationFinished += PrepareAudioTactileStim;
+        VisualTactileStimPresentation.StateInitializationFinished += PrepareVisualTactileStim;
         
         VisualTactileStimPresentation.AddUpdateMethod(() =>
         {
@@ -317,14 +317,17 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
 
     }
 
-    private void PrepareAudioTactileStim(object sender, EventArgs e)
+    private void PrepareVisualTactileStim(object sender, EventArgs e)
     {
         if (CurrentTrial.VisualStim_Index != null)
         {
             GameObject stimgo = TrialStims[0].stimDefs[0].StimGameObject;
             RectTransform rt = stimgo.GetComponent<RectTransform>();
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, TrialStims[0].stimDefs[0].StimSizePixels[0]);
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, TrialStims[0].stimDefs[0].StimSizePixels[1]);
+            Vector2 StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
+                "monitordva", 60).Value;
+            
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, StimSizePixels[0]);//TrialStims[0].stimDefs[0].StimSizePixels[0]);
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, StimSizePixels[1]);//TrialStims[0].stimDefs[0].StimSizePixels[1]);
         }
         if (CurrentTrial.TactileStim_Index != null)
             catControl.TurnTactileStimOn();
@@ -351,8 +354,8 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             {
                 foreach (StimDef sd in visStims.stimDefs)
                 {
-                    sd.StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
-                        "monitordva", 60).Value;
+                    // sd.StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
+                    //     "monitordva", 60).Value;
                 }
             }
 

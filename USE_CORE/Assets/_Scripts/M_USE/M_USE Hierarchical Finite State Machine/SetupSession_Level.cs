@@ -246,6 +246,13 @@ public class SetupSession_Level : ControlLevel
             USE_CoordinateConverter.SetMonitorDetails(USE_CoordinateConverter.MonitorDetails);
             USE_CoordinateConverter.SetScreenDetails(USE_CoordinateConverter.ScreenDetails);
         }
+        else if (Session.SessionDef.MonitorDetails != null)
+        {
+            USE_CoordinateConverter.MonitorDetails = new MonitorDetails(
+                Session.SessionDef.MonitorDetails.PixelResolution,
+                Session.SessionDef.MonitorDetails.CmSize);
+            USE_CoordinateConverter.SetMonitorDetails(USE_CoordinateConverter.MonitorDetails);
+        }
     }
 
 
