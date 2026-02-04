@@ -46,14 +46,22 @@ public class FileItem_TMP : MonoBehaviour
         FilePath_InputField = inputField;
         Text = text;
 
+        Debug.Log("MANUAL START " + Text.text);        
+        Debug.Log("MANUAL START " + file.name);
+
         if (File != null)
         {
             Text.text = PlayerPrefs.GetString("filepath-" + File.name, "");
+            Debug.Log("MANUAL START 1 " + Text.text);
             Text.text = Text.text.Replace("file://", "");
+            Debug.Log("MANUAL START 2 " + Text.text);
             Text.text = Text.text.Replace("%20", " ");
+            Debug.Log("MANUAL START 3 " + Text.text);
             File.path = Text.text;
         }
 
+        Debug.Log("MANUAL START " + Text.text);
+        
         FilePath_InputField.onEndEdit.AddListener((text) => {
             UpdatePath(text);
         });

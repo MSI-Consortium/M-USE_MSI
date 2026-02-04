@@ -106,6 +106,10 @@ public class InitScreen_Level : ControlLevel
         });
 
         //WaitForStartPressed State-----------------------------------------------------------------------------------------------------------------------------------
+        // WaitForStartPressed.AddDefaultInitializationMethod(() =>
+        // {
+        //     Debug.LogWarning(Session.ExptFolderPath);
+        // });
         WaitForStartPressed.SpecifyTermination(() => ConfirmButtonPressed, CollectInfoScreen);
         WaitForStartPressed.AddUniversalTerminationMethod(() =>
         {
@@ -419,9 +423,13 @@ public class InitScreen_Level : ControlLevel
             Session.LocateFile.AddToFilesDict(exptFileSpec); //add to locatefile files dict
             TMP_InputField exptInputField = LocalConfig_GO.GetComponentInChildren<TMP_InputField>();
             FileItem_TMP exptFileItem = LocalConfig_GO.AddComponent<FileItem_TMP>();
+            Debug.LogWarning("ExptInputField " + exptInputField.text);
+            Debug.LogWarning("exptFileItem " + exptFileItem.Text);
+            Debug.LogWarning(exptFileSpec.path);
+            Debug.LogWarning(LocalConfigText.text);
             exptFileItem.ManualStart(exptFileSpec, exptInputField, LocalConfigText);
+            Debug.LogWarning(exptFileSpec.path);
             LocalConfig_GO.GetComponentInChildren<Button>().onClick.AddListener(exptFileItem.Locate);
-
             FileSpec dataFileSpec = new FileSpec
             {
                 name = "Data Folder",
