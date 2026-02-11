@@ -7,7 +7,8 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using SRT_Namespace;
-using SFB;
+// using SFB;
+using SimpleFileBrowser;
 using USE_ExperimentTemplate_Task;
 
 public class UpdateConfigs : MonoBehaviour
@@ -139,27 +140,27 @@ public class UpdateConfigs : MonoBehaviour
 
     public void SelectVisualStim()
     {
-        visStimPaths = StandaloneFileBrowser.OpenFilePanel("Select Visual Stimuli",
-            Session.ResourcesFolderPath + "/" + TaskName + "/Stimuli/Visual",
-            new ExtensionFilter[] { new ExtensionFilter("Image Files", "jpg", "png") },
-            true);
+        // visStimPaths = StandaloneFileBrowser.OpenFilePanel("Select Visual Stimuli",
+        //     Session.ResourcesFolderPath + "/" + TaskName + "/Stimuli/Visual",
+        //     new ExtensionFilter[] { new ExtensionFilter("Image Files", "jpg", "png") },
+        //     true);
     }
 
     public void SelectAudioStim()
     {
-        audStimPaths = StandaloneFileBrowser.OpenFilePanel("Select Audio Stimuli",
-            Session.ResourcesFolderPath + "/" + TaskName + "/Stimuli/Audio",
-            new ExtensionFilter[] { new ExtensionFilter("Audio Files", "wav", "mp3", "ogg") },
-            true);
+    //     audStimPaths = StandaloneFileBrowser.OpenFilePanel("Select Audio Stimuli",
+    //         Session.ResourcesFolderPath + "/" + TaskName + "/Stimuli/Audio",
+    //         new ExtensionFilter[] { new ExtensionFilter("Audio Files", "wav", "mp3", "ogg") },
+    //         true);
     }
 
     public void SelectFixCross()
     {
-        string[] fixCrossPaths = StandaloneFileBrowser.OpenFilePanel("Select Fixation Cross",
-            Session.ResourcesFolderPath + "/" + TaskName + "/Stimuli",
-            new ExtensionFilter[] { new ExtensionFilter("Image Files", "jpg", "png") },
-            false);
-        fixCrossPath = fixCrossPaths[0];
+        // string[] fixCrossPaths = StandaloneFileBrowser.OpenFilePanel("Select Fixation Cross",
+        //     Session.ResourcesFolderPath + "/" + TaskName + "/Stimuli",
+        //     new ExtensionFilter[] { new ExtensionFilter("Image Files", "jpg", "png") },
+        //     false);
+        // fixCrossPath = fixCrossPaths[0];
     }
     
     public void CreateAndSaveStimDefFile(string filePath)

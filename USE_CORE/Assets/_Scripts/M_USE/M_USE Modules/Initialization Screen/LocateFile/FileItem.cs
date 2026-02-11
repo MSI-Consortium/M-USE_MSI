@@ -29,7 +29,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 #if (!UNITY_WEBGL)
-	using SFB;
+	// using SFB;
+    using SimpleFileBrowser;
 #endif
 
 
@@ -71,9 +72,33 @@ public class FileItem_TMP : MonoBehaviour
     {
         #if (!UNITY_WEBGL)
 		    if(!File.isFolder)
-			    StandaloneFileBrowser.OpenFilePanelAsync("Open File", Text.text, "", false, (string[] paths) => { OnFileOpened(paths); });
+                FileBrowser.ShowLoadDialog(async (paths) =>
+                    {
+                        OnFileOpened(FileBrowser.Result);
+                        // foreach (string file in FileBrowser.Result)
+                        // {
+                        //     await UploadFileToRepo(file);
+                        // }
+                    },
+                    null,
+                    FileBrowser.PickMode.Files,
+                    allowMultiSelection: false,
+                    title: "Select File");
+			    //StandaloneFileBrowser.OpenFilePanelAsync("Open File", Text.text, "", false, (string[] paths) => { OnFileOpened(paths); });
 		    else
-			    StandaloneFileBrowser.OpenFolderPanelAsync("Open File", Text.text, false, (string[] paths) => { OnFileOpened(paths); });
+                FileBrowser.ShowLoadDialog(async (paths) =>
+                    {
+                        OnFileOpened(FileBrowser.Result);
+                        // foreach (string file in FileBrowser.Result)
+                        // {
+                        //     await UploadFileToRepo(file);
+                        // }
+                    },
+                    null,
+                    FileBrowser.PickMode.Folders,
+                    allowMultiSelection: false,
+                    title: "Select Folder");
+			    // StandaloneFileBrowser.OpenFolderPanelAsync("Open File", Text.text, false, (string[] paths) => { OnFileOpened(paths); });
         #endif
     }
 

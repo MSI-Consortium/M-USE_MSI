@@ -55,7 +55,8 @@
       "name": "OpenUPM",
       "url": "https://package.openupm.com",
       "scopes": [
-        "com.atteneder"
+        "com.atteneder",
+        "io.github.gkngkc.unity-standalone-file-browser"
       ]
     }
   ]
