@@ -1,0 +1,16 @@
+string	ExternalStimFolderPath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT_Movement/Stimuli"
+float	ExternalStimScale	3
+List<string>	FeedbackControllers	["Slider"]
+//String	TaskInstructionsPreVideoSlidesFolderPath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT_Movement/Instructions/PreVideoSlides"
+String	TaskInstructionsPostVideoSlidesFolderPath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT_Movement/Instructions/PostVideoSlides"
+//String	TaskInstructionsVideoPath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT/Instructions/InstructionVideo.mp4"
+String	InterBlockSlidePath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT_Movement/Instructions/InterblockSlides"
+String	TimeWarningSlidePath	"/Users/marcus/Desktop/M-USE_AV_Folder/Resources/AV_Detection/Instructions/TimeWarningSlides"
+String	LongTimeWarningSlidePath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT_Movement/Instructions/LongTimeWarningSlides"
+String	ShortTimeWarningSlidePath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT_Movement/Instructions/ShortTimeWarningSlides"
+int	MaxConsecutiveLongTrials	5
+int	MaxConsecutiveShortTrials	3
+Float	VisualDelayOnAvTrials	.05
+String	TaskInstructionsVideoActive	true
+String	CaterpillarPort	"/dev/tty.usbserial-AV0K3FPG"
+Bool	UsingLSL	true

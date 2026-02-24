@@ -44,6 +44,7 @@ using FruitRunner_Namespace;
 using THRQ_Namespace;
 using AudioVisual_Namespace;
 using SRT_Namespace;
+using SRT_Movement_Namespace;
 //#END OF USING DIRECTIVES - DO NOT DELETE THIS LINE#
 
 
@@ -251,6 +252,18 @@ static public class USE_Tasks_CustomTypes
                 BlockDefType = typeof(SRT_BlockDef),
                 TrialDefType = typeof(SRT_TrialDef),
                 StimDefType = typeof(SRT_StimDef)
+            }
+        }
+        
+        ,{
+            "SRT_Movement", new TaskTypes
+            {
+                TaskLevelType = typeof(SRT_Movement_TaskLevel),
+                TrialLevelType = typeof(SRT_Movement_TrialLevel),
+                TaskDefType = typeof(SRT_Movement_TaskDef),
+                BlockDefType = typeof(SRT_Movement_BlockDef),
+                TrialDefType = typeof(SRT_Movement_TrialDef),
+                StimDefType = typeof(SRT_Movement_StimDef)
             }
         }
 //#END OF CUSTOMTASKTYPES DICTIONARY - DO NOT DELETE THIS LINE#

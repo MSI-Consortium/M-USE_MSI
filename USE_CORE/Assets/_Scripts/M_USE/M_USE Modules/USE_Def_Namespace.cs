@@ -382,6 +382,8 @@ namespace USE_Def_Namespace
         /// </summary>
         public bool TaskInstructionsVideoActive;
 
+        public bool UsingLSL;
+
     }
 
 

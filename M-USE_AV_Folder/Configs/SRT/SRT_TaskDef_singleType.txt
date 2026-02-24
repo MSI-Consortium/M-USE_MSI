@@ -13,3 +13,4 @@ int	MaxConsecutiveShortTrials	3
 Float	VisualDelayOnAvTrials	.05
 String	TaskInstructionsVideoActive	true
 String	CaterpillarPort	"/dev/tty.usbserial-AV0K3FPG"
+Bool	UsingLSL	true

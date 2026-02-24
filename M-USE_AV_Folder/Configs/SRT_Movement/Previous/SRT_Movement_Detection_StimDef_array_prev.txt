@@ -1,0 +1,8 @@
+StimIndex	FileName
+0	Square_Red.png
+1	Square_Blue.png
+2	Square_Green.png
+3	beepC1.wav
+4	beepC2.wav
+5	beepG.wav
+6	white_plus_sign.png

@@ -179,6 +179,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
                     CurrentTrial.ResponseChar.ToUpper())))
             {
+                LSL_Manager.PushSample("-1");
                 ResponseString = "Responded";
                 RT = null;
             }
@@ -197,6 +198,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
                     CurrentTrial.ResponseChar.ToUpper())))
             {
+                LSL_Manager.PushSample("-1");
                 ResponseString = "Responded";
                 RT = null;
             }
@@ -213,6 +215,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
                     CurrentTrial.ResponseChar.ToUpper())))
             {
+                LSL_Manager.PushSample("2");
                 ResponseString = "Responded";
                 RT = Time.time - VisualTactileStimPresentation.TimingInfo.StartTimeAbsolute;
             }
@@ -239,6 +242,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
                     CurrentTrial.ResponseChar.ToUpper())))
             {
+                LSL_Manager.PushSample("2");
                 ResponseString = "Responded";
                 RT = Time.time - VisualTactileStimPresentation.TimingInfo.StartTimeAbsolute;
                     
@@ -305,8 +309,24 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
 
     private void PrepareVisualTactileStim(object sender, EventArgs e)
     {
+        string lslstring = "1";
+
+        if (CurrentTrial.AudioStim_Index != null)
+            lslstring += (CurrentTrial.AudioStim_Index + 1);
+        else
+            lslstring += 0;
+        
+        if (CurrentTrial.TactileStim_Index != null)
+        {
+            lslstring += (CurrentTrial.TactileStim_Index + 1);
+            catControl.TurnTactileStimOn();
+        }
+        else
+            lslstring += 0;
+        
         if (CurrentTrial.VisualStim_Index != null)
         {
+            lslstring += (CurrentTrial.VisualStim_Index + 1);
             GameObject stimgo = TrialStims[0].stimDefs[0].StimGameObject;
             RectTransform rt = stimgo.GetComponent<RectTransform>();
             Vector2 StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
@@ -315,8 +335,10 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, StimSizePixels[0]);//TrialStims[0].stimDefs[0].StimSizePixels[0]);
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, StimSizePixels[1]);//TrialStims[0].stimDefs[0].StimSizePixels[1]);
         }
-        if (CurrentTrial.TactileStim_Index != null)
-            catControl.TurnTactileStimOn();
+        else
+            lslstring += 0;
+        
+        LSL_Manager.PushSample(lslstring);
     }
     
     protected override void DefineTrialStims()

@@ -87,6 +87,7 @@ namespace USE_UI
                 { "WorkingMemory", "Remember and identify the target object to earn your reward. Don't let the distractor objects fool you!" },
                 { "GazeCalibration", "Calibrate the Gaze Tracker by looking at the dots!" },
                 { "SRT", "Press the red button as soon as you hear a sound, see a flash, or both!" },
+                { "SRT_Movement", "Press the red button as soon as you feel a buzz, see a flash, or both!" },
 
             };
             TaskNamesDict = new Dictionary<string, string>()
@@ -101,8 +102,8 @@ namespace USE_UI
                 { "WhatWhenWhere", "What When Where" },
                 { "WorkingMemory", "Working Memory" },
                 { "GazeCalibration", "Gaze Calibration" },
-                { "SRT", "Serial Reaction Time" }
-
+                { "SRT", "Serial Reaction Time" },
+                { "SRT_Movement", "Serial Reaction Time With Movement" }
             };
         }
 

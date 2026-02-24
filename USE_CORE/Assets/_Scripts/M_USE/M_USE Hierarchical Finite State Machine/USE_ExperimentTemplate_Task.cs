@@ -263,6 +263,9 @@ namespace USE_ExperimentTemplate_Task
 
                         if(Session.SessionDef.IsHuman)
                         {
+                            Debug.Log(Session.HumanStartPanel);
+                            Debug.Log(FrameData);
+                            Debug.Log(TaskName);
                             Session.HumanStartPanel.CreateHumanStartPanel(FrameData, canvas, TaskName);
                         }
 
@@ -286,6 +289,9 @@ namespace USE_ExperimentTemplate_Task
                 {
                     TaskDirectionalLight.SetActive(true);  
                 }
+                
+                if(TaskDef.UsingLSL)
+                    LSL_Manager.Init();
             });
             
             
