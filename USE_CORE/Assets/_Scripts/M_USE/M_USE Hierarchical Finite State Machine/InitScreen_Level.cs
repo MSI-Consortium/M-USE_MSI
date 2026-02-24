@@ -38,6 +38,9 @@ public class InitScreen_Level : ControlLevel
     private GameObject MuseTextParentGO;
     private GameObject PlayBackgroundImageGO;
     public GameObject MainPanel_GO;
+    public GameObject QuaddlesGO;
+    public GameObject InitScreenCanvas_GO;
+
 
     public TextMeshProUGUI SubjectID_Text;
     public TextMeshProUGUI SubjectAge_Text;
@@ -91,19 +94,56 @@ public class InitScreen_Level : ControlLevel
     public override void DefineControlLevel()
     {
         State Setup = new State("Setup");
+        State FadeQuaddlesIn = new State("FadeQuaddlesIn");
         State WaitForStartPressed = new State("WaitForStartPressed");
         State CollectInfoScreen = new State("CollectInfoScreen");
-        AddActiveStates(new List<State> { Setup, WaitForStartPressed, CollectInfoScreen });
+        AddActiveStates(new List<State> { Setup, FadeQuaddlesIn, WaitForStartPressed, CollectInfoScreen });
 
 
         //Setup State-----------------------------------------------------------------------------------------------------------------------------------
+        State successor;
+
+        if (Session.SkipIntros)
+            successor = CollectInfoScreen;
+        else
+            successor = FadeQuaddlesIn;
         Setup.AddSpecificInitializationMethod(() => SetupInitScreen());
-        Setup.SpecifyTermination(() => true, WaitForStartPressed, () =>
+        Setup.SpecifyTermination(() => true, successor);
+        
+        //FadeQuaddlesIn State-----------------------------------------------------------------------------------------------------------------------------------
+        Vector3 startingPos = new Vector3();
+        float fadeInSpeed = 3f;
+        bool DoneFading = false;
+        FadeQuaddlesIn.AddSpecificInitializationMethod(() =>
         {
+            DoneFading = false;
+
+            MuseTextParentGO = Instantiate(Resources.Load<GameObject>("TitleText"), InitScreenCanvas_GO.transform);
+            MuseTextParentGO.name = "TitleTextParent";
             MuseTextParentGO.SetActive(true);
 
-            StartCoroutine(FadeScreenInCoroutine());
+            QuaddlesGO = Instantiate(Resources.Load<GameObject>("IntroStim"));
+            QuaddlesGO.name = "IntroStim";
+            QuaddlesGO.SetActive(true);
+
+            PlayBackgroundImageGO = MuseTextParentGO.transform.Find("BackgroundImage").gameObject;
+            PlayBackgroundImageGO.gameObject.AddComponent<Button>().onClick.AddListener(HandleStartSessionButtonPress);
+            PlayBackgroundImageGO.SetActive(false);
+
+            PlayBackgroundImageGO.SetActive(true);
+
+            startingPos = QuaddlesGO.transform.position;
+            QuaddlesGO.transform.position = new Vector3(QuaddlesGO.transform.position.x, -3f, QuaddlesGO.transform.position.z);
         });
+        FadeQuaddlesIn.AddUpdateMethod(() =>
+        {
+            if (QuaddlesGO.transform.position != startingPos)
+                QuaddlesGO.transform.position = Vector3.MoveTowards(QuaddlesGO.transform.position, startingPos, fadeInSpeed * Time.deltaTime);
+            else
+                DoneFading = true;
+        });
+        FadeQuaddlesIn.SpecifyTermination(() => DoneFading, WaitForStartPressed);
+
 
         //WaitForStartPressed State-----------------------------------------------------------------------------------------------------------------------------------
         // WaitForStartPressed.AddDefaultInitializationMethod(() =>
@@ -145,9 +185,15 @@ public class InitScreen_Level : ControlLevel
             SetConfigInfo();
             SetDataInfo();
 
-            InitScreen_GO.SetActive(false);
+            // InitScreen_GO.SetActive(false);
+            InitScreenCanvas_GO.SetActive(false);
 
-            Session.MainExperimenterCanvas_LoadingText_GO.SetActive(true);
+            Session.LoadingController.ActivateLoadingCanvas(Session.WebBuild | Session.SingleDisplayBuild ? 0 : 1); //turn on loading canvas/circle so that it immedietely shows its loading!
+
+            //Set Main cam rotation and position to that of the init cam:
+            Camera.main.transform.position = Session.InitCamGO.transform.position;
+            Camera.main.transform.rotation = Session.InitCamGO.transform.rotation;
+
 
         });
 
@@ -394,71 +440,58 @@ public class InitScreen_Level : ControlLevel
         }
     }
 
-    private void SetupInitScreen()
+   private void SetupInitScreen()
     {
-        try
+        if (Session.WebBuild | Session.SingleDisplayBuild)
         {
-            if (Session.WebBuild)
-            {
-                Session.MainExperimenterCanvas_GO.GetComponent<Canvas>().targetDisplay = 0;
-                Session.ParticipantCanvas_GO.SetActive(false);
-                Session.InitCamGO.GetComponent<Camera>().targetDisplay = 0;
-            }
-
-            MuseTextParentGO = Session.MainExperimenterCanvas_GO.transform.Find("TitleText").gameObject;
-
-            PlayBackgroundImageGO = MuseTextParentGO.transform.Find("Back").gameObject;
-            PlayBackgroundImageGO.gameObject.AddComponent<Button>().onClick.AddListener(HandleStartSessionButtonPress);
-
-            KeyboardController = Session.MainExperimenterCanvas_GO.GetComponent<KeyboardController>();
-
-            SettingsButton_GO.GetComponent<Button>().onClick.AddListener(HandleSettingButtonClicked);
-
-            //SETUP FILE ITEMS FOR BOTH ConfigFolder & DataFolder:
-            FileSpec exptFileSpec = new FileSpec
-            {
-                name = "Experiment Folder",
-                isFolder = true
-            };
-            Session.LocateFile.AddToFilesDict(exptFileSpec); //add to locatefile files dict
-            TMP_InputField exptInputField = LocalConfig_GO.GetComponentInChildren<TMP_InputField>();
-            FileItem_TMP exptFileItem = LocalConfig_GO.AddComponent<FileItem_TMP>();
-            Debug.LogWarning("ExptInputField " + exptInputField.text);
-            Debug.LogWarning("exptFileItem " + exptFileItem.Text);
-            Debug.LogWarning(exptFileSpec.path);
-            Debug.LogWarning(LocalConfigText.text);
-            exptFileItem.ManualStart(exptFileSpec, exptInputField, LocalConfigText);
-            Debug.LogWarning(exptFileSpec.path);
-            LocalConfig_GO.GetComponentInChildren<Button>().onClick.AddListener(exptFileItem.Locate);
-            FileSpec dataFileSpec = new FileSpec
-            {
-                name = "Data Folder",
-                isFolder = true
-            };
-            Session.LocateFile.AddToFilesDict(dataFileSpec); //add to locatefile files dict
-            TMP_InputField dataInputField = LocalData_GO.GetComponentInChildren<TMP_InputField>();
-            FileItem_TMP dataFileItem = LocalData_GO.AddComponent<FileItem_TMP>();
-            dataFileItem.ManualStart(dataFileSpec, dataInputField, LocalDataText);
-            LocalData_GO.GetComponentInChildren<Button>().onClick.AddListener(dataFileItem.Locate);
-
-            if (Session.WebBuild)
-            {
-                LocalData_GO.SetActive(false);
-                LocalConfig_GO.SetActive(false);
-            }
-            else
-            {
-                ServerData_GO.SetActive(false);
-                ServerConfig_GO.SetActive(false);
-                //Un-Block out local toggle options if not web build:
-                LocalConfigsToggle_GreyPanel.SetActive(false);
-                LocalDataToggle_GreyPanel.SetActive(false);
-            }
+            InitScreenCanvas_GO.GetComponent<Canvas>().targetDisplay = 0;
+            Session.InitCamGO.GetComponent<Camera>().targetDisplay = 0;
         }
-        catch(Exception e)
+
+        KeyboardController = InitScreenCanvas_GO.GetComponent<KeyboardController>();
+
+        SettingsButton_GO.GetComponent<Button>().onClick.AddListener(HandleSettingButtonClicked);
+
+        //SETUP FILE ITEMS FOR BOTH ConfigFolder & DataFolder:
+        FileSpec configFileSpec = new FileSpec
         {
-            Debug.LogError("FAILING SETTING UP INIT SCREEN! Error: " + e.Message);
+            name = "Experiment Folder",
+            isFolder = true
+        };
+        Session.LocateFile.AddToFilesDict(configFileSpec); //add to locatefile files dict
+        TMP_InputField configInputField = LocalConfig_GO.GetComponentInChildren<TMP_InputField>();
+        FileItem_TMP configFileItem = LocalConfig_GO.AddComponent<FileItem_TMP>();
+        configFileItem.ManualStart(configFileSpec, configInputField, LocalConfigText);
+        LocalConfig_GO.GetComponentInChildren<Button>().onClick.AddListener(configFileItem.Locate);
+
+        FileSpec dataFileSpec = new FileSpec
+        {
+            name = "Data Folder",
+            isFolder = true
+        };
+        Session.LocateFile.AddToFilesDict(dataFileSpec); //add to locatefile files dict
+        TMP_InputField dataInputField = LocalData_GO.GetComponentInChildren<TMP_InputField>();
+        FileItem_TMP dataFileItem = LocalData_GO.AddComponent<FileItem_TMP>();
+        dataFileItem.ManualStart(dataFileSpec, dataInputField, LocalDataText);
+        LocalData_GO.GetComponentInChildren<Button>().onClick.AddListener(dataFileItem.Locate);
+
+        if (Session.WebBuild)
+        {
+            LocalData_GO.SetActive(false);
+            LocalConfig_GO.SetActive(false);
         }
+        else
+        {
+            ServerData_GO.SetActive(false);
+            ServerConfig_GO.SetActive(false);
+            //Un-Block out local toggle options if not web build:
+            LocalConfigsToggle_GreyPanel.SetActive(false);
+            LocalDataToggle_GreyPanel.SetActive(false);
+        }
+
+        // ToggleChange_AudioClip = Resources.Load<AudioClip>("GridItemAudio");
+        // Error_AudioClip = Resources.Load<AudioClip>("Error");
+        // Connected_AudioClip = Resources.Load<AudioClip>("DoubleBeep");
     }
 
     public void HandleSettingButtonClicked()

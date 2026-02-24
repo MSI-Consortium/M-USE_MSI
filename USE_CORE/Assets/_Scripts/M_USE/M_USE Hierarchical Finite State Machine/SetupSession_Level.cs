@@ -137,8 +137,11 @@ public class SetupSession_Level : ControlLevel
             };
         });
 
-        LoadTaskScene.SpecifyTermination(() => taskSceneLoaded && !setupPaused, VerifyTask);
-
+        LoadTaskScene.SpecifyTermination(() => taskSceneLoaded && !setupPaused, VerifyTask, () =>
+        {
+            Session.LoadingController.DeactivateLoadingCanvas();
+            // Session.ExperimenterDisplayController.ExperimenterDisplayGO.SetActive(false);
+        });
 
         VerifyTask_Level verifyTask_Level = GameObject.Find("ControlLevels").GetComponent<VerifyTask_Level>();
 

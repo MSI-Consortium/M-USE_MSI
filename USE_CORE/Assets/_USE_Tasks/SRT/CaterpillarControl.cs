@@ -31,8 +31,9 @@ public class CaterpillarControl : MonoBehaviour
             Debug.Log(ports[i]);
         }
 
+        string portname = "/dev/tty.usbserial-AV0K3FPG";
         // Create a new SerialPort object with caterpillar settings.
-        _serialPort = new SerialPort(ports[1], 250000, Parity.None, 8, StopBits.One);
+        _serialPort = new SerialPort(portname, 250000, Parity.None, 8, StopBits.One);
         _serialPort.ReadTimeout = 500;
         _serialPort.Open();
 

@@ -52,23 +52,22 @@ public class TaskInstructions_Level : ControlLevel
         PreVideoSlides.SpecifyTermination(()=> skipPreVideoSlides || slideLevel.Terminated, Video);
 
         bool skipVideo = true;
-
-        VideoPlayer videoPlayer = null;
+        
+        VideoPlayer videoPlayer = taskCam.gameObject.AddComponent<VideoPlayer>();
         bool videoStarted = false;
+        videoPlayer.errorReceived += VideoPlayer_errorReceived;
         Video.AddUniversalInitializationMethod(() =>
         {
+            videoPlayer = taskCam.gameObject.AddComponent<VideoPlayer>();
+            videoStarted = false;
+            videoPlayer.errorReceived += VideoPlayer_errorReceived;
             if (!string.IsNullOrEmpty(videoPath))
             {
-                videoPlayer = taskCam.gameObject.AddComponent<VideoPlayer>();
-                videoStarted = false;
-                videoPlayer.errorReceived += VideoPlayer_errorReceived;
-                // VideoClip clip = Resources.Load<VideoClip>(videoPath) as VideoClip;
-                // videoPlayer.clip = clip;
+                Debug.Log(videoPath);
+                VideoClip clip = Resources.Load<VideoClip>(videoPath) as VideoClip;
+                videoPlayer.clip = clip;
                 skipVideo = false;
-                videoPlayer.source = VideoSource.Url;
-                videoPlayer.url = videoPath;
-                vp.Prepare();
-                // StartCoroutine(LoadVideo(videoPlayer));
+                StartCoroutine(LoadVideo(videoPlayer, videoPath));
             }
             else
                 skipVideo = true;
@@ -77,20 +76,17 @@ public class TaskInstructions_Level : ControlLevel
         {
             if (!skipVideo && videoPlayer.isPrepared && !videoPlayer.isPlaying && !videoStarted)
             {
+                Debug.Log("PLAYING VIDEO");
                 videoPlayer.Play();
                 videoStarted = true;
             }
         });
         Video.SpecifyTermination(
-            () => skipVideo | (videoPlayer != null && (videoPlayer.isPrepared && !videoPlayer.isPlaying)) | InputBroker.GetKeyUp(KeyCode.Space),
+            () => skipVideo | (videoPlayer.isPrepared && !videoPlayer.isPlaying) | InputBroker.GetKeyUp(KeyCode.Space),
             PostVideoSlides, () =>
             {
-                if (videoPlayer != null)
-                {
-                    videoPlayer.Stop();
-                    videoPlayer.clip = null;
-                    Destroy(videoPlayer);
-                }
+                videoPlayer.Stop();
+                Destroy(videoPlayer);
             }); // skipVideo || videoFinished
 
 
@@ -152,8 +148,9 @@ public class TaskInstructions_Level : ControlLevel
         return slidePaths;
     }
 
-    private IEnumerator LoadVideo(VideoPlayer vp)
+    private IEnumerator LoadVideo(VideoPlayer vp, string path)
     {
+        vp.url = path;
         // vp.clip = Resources.Load("InstructionVideo.ogv") as VideoClip;
         vp.Prepare();
         while (!vp.isPrepared)

@@ -183,7 +183,7 @@ namespace USE_ExperimentTemplate_Task
             BlockFeedback = new State("BlockFeedback");
             FinishTask = new State("FinishTask");
             RunBlock.AddChildLevel(TrialLevel);
-            AddActiveStates(new List<State> { SetupBlock, RunBlock, BlockFeedback, FinishTask });//TaskInstructions, SetupBlock, RunBlock, BlockFeedback, FinishTask });
+            AddActiveStates(new List<State> { TaskInstructions, SetupBlock, RunBlock, BlockFeedback, FinishTask });//TaskInstructions, SetupBlock, RunBlock, BlockFeedback, FinishTask });
 
             TrialLevel.TrialDefType = TrialDefType;
             TrialLevel.StimDefType = StimDefType;
@@ -192,28 +192,32 @@ namespace USE_ExperimentTemplate_Task
 
             Add_ControlLevel_InitializationMethod(() =>
             {
-                StartCoroutine(TurnOffLoadingCanvas());
-                if (TaskDef.TaskInstructionsVideoActive)
-                    TaskDef.TaskInstructionsVideoPath =  Session.ExptFolderPath + "/Resources/" + TaskName + "/Instructions/PracticeIntro.mp4";
+                // // StartCoroutine(TurnOffLoadingCanvas());
+                // if (TaskDef.TaskInstructionsVideoActive)
+                //     TaskDef.TaskInstructionsVideoPath =  Session.ExptFolderPath + "/Resources/" + TaskName + "/Instructions/PracticeIntro.mp4";
+                // if (GameObject.Find(TaskName + "_ConfigUpdateCanvas"))
+                //     GameObject.Find(TaskName + "_ConfigUpdateCanvas").SetActive(false);
+                // if(TaskLoadingControllerGO == null)
+                // {
+                //     TaskLoadingControllerGO = Instantiate(Resources.Load<GameObject>("LoadingCanvas_New"));
+                //     TaskLoadingControllerGO.name = "LoadingCanvas_Task";
+                //     Canvas loadingCanvas = TaskLoadingControllerGO.GetComponent<Canvas>();
+                //     if (loadingCanvas != null)
+                //     {
+                //         loadingCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+                //         loadingCanvas.worldCamera = TaskCam;
+                //     }
+                //     else
+                //         Debug.LogError("CANVAS IS NULL");
+                //
+                // }
+
+                // TaskLoadingControllerGO.SetActive(true);
+
                 if (GameObject.Find(TaskName + "_ConfigUpdateCanvas"))
                     GameObject.Find(TaskName + "_ConfigUpdateCanvas").SetActive(false);
-                if(TaskLoadingControllerGO == null)
-                {
-                    TaskLoadingControllerGO = Instantiate(Resources.Load<GameObject>("LoadingCanvas_New"));
-                    TaskLoadingControllerGO.name = "LoadingCanvas_Task";
-                    Canvas loadingCanvas = TaskLoadingControllerGO.GetComponent<Canvas>();
-                    if (loadingCanvas != null)
-                    {
-                        loadingCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-                        loadingCanvas.worldCamera = TaskCam;
-                    }
-                    else
-                        Debug.LogError("CANVAS IS NULL");
-
-                }
-
-                TaskLoadingControllerGO.SetActive(true);
-
+                    
+                TaskCam.gameObject.SetActive(true);
 
                 if (TaskDirectionalLight != null)
                 {
@@ -232,7 +236,7 @@ namespace USE_ExperimentTemplate_Task
                 NumRewardPulses_InTask = 0;
                 NumAbortedTrials_InTask = 0;
 
-                if (!Session.WebBuild && TaskName != "GazeCalibration")
+                if (!Session.WebBuild && !Session.SingleDisplayBuild && TaskName != "GazeCalibration")
                 {
                     if (configUI == null)
                         configUI = FindObjectOfType<ConfigUI>();
@@ -284,6 +288,34 @@ namespace USE_ExperimentTemplate_Task
                 }
             });
             
+            
+            TaskInstructions_Level taskInstructions_Level = GameObject.Find("ControlLevels").GetComponent<TaskInstructions_Level>();
+
+            TaskInstructions.AddChildLevel(taskInstructions_Level);
+            
+            TaskInstructions.AddUniversalInitializationMethod(() =>
+            {
+                if (Session.SessionDef.ConstantBackgroundColour != null)
+                {
+                    TaskCam.backgroundColor = new Color(
+                        Session.SessionDef.ConstantBackgroundColour.x, Session.SessionDef.ConstantBackgroundColour.y,
+                        Session.SessionDef.ConstantBackgroundColour.z);
+                    TaskCam.clearFlags = CameraClearFlags.SolidColor;
+                }else
+                    TaskCam.clearFlags = CameraClearFlags.Skybox;
+                Session.LoadingController.DeactivateLoadingCanvas();
+                taskInstructions_Level.taskName = TaskName;
+                taskInstructions_Level.preVideoSlideFolderPath = TaskDef.TaskInstructionsPreVideoSlidesFolderPath;
+                taskInstructions_Level.postVideoSlideFolderPath = TaskDef.TaskInstructionsPostVideoSlidesFolderPath;
+                taskInstructions_Level.videoPath = TaskDef.TaskInstructionsVideoPath;
+                taskInstructions_Level.taskCam = TaskCam;
+                if (string.IsNullOrEmpty(TaskDef.TaskInstructionsPostVideoSlidesFolderPath))
+                    taskInstructions_Level.postVideoSlideFolderPath = TaskDef.TaskInstructionsSlidesFolderPath;
+                
+                taskInstructions_Level.DefineControlLevel();
+            });
+            TaskInstructions.SpecifyTermination(()=> taskInstructions_Level.Terminated, SetupBlock);
+
             SetupBlock.AddUniversalInitializationMethod(() =>
             {
                 
@@ -460,7 +492,7 @@ namespace USE_ExperimentTemplate_Task
                 if(GameObject.Find("InputManager")?.transform.Find("FeedbackControllers(Clone)") != null)
                     Destroy(GameObject.Find("InputManager").transform.Find("FeedbackControllers(Clone)").gameObject);
 
-                if (!Session.WebBuild)
+                if (!Session.WebBuild && !Session.SingleDisplayBuild)
                 {
                     foreach (Transform child in GameObject.Find("MainCameraCopy").transform)
                         Destroy(child.gameObject);

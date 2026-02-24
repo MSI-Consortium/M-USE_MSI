@@ -269,7 +269,7 @@ namespace USE_ExperimentTemplate_Trial
 
             LoadTrialStims.AddUniversalInitializationMethod(() =>
             {
-                if(!Session.WebBuild && TrialCount_InTask != 0)
+                if(!Session.WebBuild && !Session.SingleDisplayBuild  && TrialCount_InTask != 0)
                     Session.SessionInfoPanel.UpdateSessionSummaryValues(("totalTrials", 1));
 
                 FrameData.CreateNewTrialIndexedFile(TrialCount_InTask + 1, Session.FilePrefix);

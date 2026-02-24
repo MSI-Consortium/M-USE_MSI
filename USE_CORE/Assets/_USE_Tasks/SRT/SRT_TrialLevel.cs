@@ -142,20 +142,6 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
             
         });
         TaskInstructions_Level taskInstructions_Level = GameObject.Find("ControlLevels").GetComponent<TaskInstructions_Level>();
-
-        // SetupTrial.SpecifyTermination(()=> consecutiveLongTrials >= maxConsecutiveLongTrials, TimeWarning, () =>
-        // {
-        //     taskInstructions_Level.postVideoSlideFolderPath =
-        //         GetTaskDef<SRT_TaskDef>().LongTimeWarningSlidePath;
-        //     taskInstructions_Level.videoPath = GetTaskDef<SRT_TaskDef>().LongTimeWarningVideoPath;
-        // });
-        // SetupTrial.SpecifyTermination(()=> consecutiveShortTrials >= maxConsecutiveShortTrials, TimeWarning, () =>
-        // {
-        //     taskInstructions_Level.postVideoSlideFolderPath =
-        //         GetTaskDef<SRT_TaskDef>().ShortTimeWarningSlidePath;
-        //     taskInstructions_Level.videoPath = GetTaskDef<SRT_TaskDef>().ShortTimeWarningVideoPath;
-        // });
-        
         
         TimeWarning.AddChildLevel(taskInstructions_Level);
 

@@ -3,7 +3,7 @@ float	ExternalStimScale	3
 List<string>	FeedbackControllers	["Slider"]
 //String	TaskInstructionsPreVideoSlidesFolderPath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT/Instructions/PreVideoSlides"
 String	TaskInstructionsPostVideoSlidesFolderPath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT/Instructions/PostVideoSlides"
-String	TaskInstructionsVideoPath	"/Users/marcus/Desktop/M-USE_AV_Folder/Resources/AV_Detection/Instructions/InstructionVideo.mp4"
+//String	TaskInstructionsVideoPath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT/Instructions/InstructionVideo.mp4"
 String	InterBlockSlidePath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT/Instructions/InterblockSlides"
 String	TimeWarningSlidePath	"/Users/marcus/Desktop/M-USE_AV_Folder/Resources/AV_Detection/Instructions/TimeWarningSlides"
 String	LongTimeWarningSlidePath	"/Users/marcus/Documents/GitHub/MSI-Consortium/M-USE_MSI/M-USE_AV_Folder/Resources/SRT/Instructions/LongTimeWarningSlides"

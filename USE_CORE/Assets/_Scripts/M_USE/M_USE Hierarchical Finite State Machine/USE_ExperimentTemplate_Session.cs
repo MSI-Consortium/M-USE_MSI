@@ -174,7 +174,7 @@ namespace USE_ExperimentTemplate_Session
             {
                 CreateExperimenterDisplay();
                 
-                if(Session.WebBuild)
+                if(Session.WebBuild | Session.SingleDisplayBuild)
                     Session.InitCamGO.SetActive(false);
                 else
                 {
@@ -265,7 +265,7 @@ namespace USE_ExperimentTemplate_Session
                     Session.GazeTracker.enabled = true;
 
 
-                if (!Session.WebBuild)
+                if (!Session.WebBuild && !Session.SingleDisplayBuild)
                     Session.SessionInfoPanel = ExperimenterDisplayGO.transform.Find("SessionInfoPanel").GetComponent<SessionInfoPanel>();
 
                 Session.EventCodeManager.AddToFrameEventCodeBuffer("SetupSessionEnds");
@@ -447,8 +447,13 @@ namespace USE_ExperimentTemplate_Session
             //SessionBuilder State---------------------------------------------------------------------------------------------------------------
             sessionBuilder.AddUniversalInitializationMethod(() =>
             {
-                Session.MainExperimenterCanvas_LoadingText_GO.SetActive(false);
+                // Session.MainExperimenterCanvas_LoadingText_GO.SetActive(false);
+                
+                Session.LoadingController.DeactivateLoadingCanvas(); //Turn off loading circle now that about to set taskselection canvas active!
 
+                if (!Session.SingleDisplayBuild)
+                    AssignExperimenterDisplayRenderTexture(SessionCam);
+                
                 //AssignExperimenterDisplayRenderTexture(SessionCam);
 
                 ExperimenterDisplayGO.SetActive(false);
@@ -481,26 +486,39 @@ namespace USE_ExperimentTemplate_Session
 
                 // Activate TaskSelectionCanvas and assign it to the primary display
                 Session.TaskSelectionCanvasGO.SetActive(true);
-                Session.TaskSelectionCanvasGO.GetComponent<Canvas>().targetDisplay = 0;
-                SessionCam.targetDisplay = 0;
+                
+                Session.LoadingController.DeactivateLoadingCanvas(); //Turn off loading circle now that about to set taskselection canvas active!
 
-                AssignExperimenterDisplayRenderTexture(SessionCam);
-
-                if (Session.WebBuild)
+                if(!Session.WebBuild && !Session.SingleDisplayBuild)
                 {
-                    Session.MainExperimenterCanvas_GO.SetActive(false);
-                }
-
-                Session.ParticipantCanvas_GO.SetActive(false);
-
-                if(!Session.WebBuild)
-                {
+                    AssignExperimenterDisplayRenderTexture(SessionCam);
                     ExperimenterDisplayCanvas.gameObject.SetActive(true);
                     ExperimenterDisplayGO.SetActive(true);
-                    ExperimenterDisplayCanvas.transform.Find("Background").gameObject.SetActive(false); //Turn off the spinning background on the Exp Display now that session builder is done:
+                    //Turn off the spinning background on the Exp Display now that session builder is done:
+                    ExperimenterDisplayCanvas.transform.Find("Background").gameObject.SetActive(false);
                 }
                 else
                     ExperimenterDisplayCanvas.gameObject.SetActive(false);
+                // Session.TaskSelectionCanvasGO.GetComponent<Canvas>().targetDisplay = 0;
+                // SessionCam.targetDisplay = 0;
+                //
+                // AssignExperimenterDisplayRenderTexture(SessionCam);
+                //
+                // if (Session.WebBuild)
+                // {
+                //     Session.MainExperimenterCanvas_GO.SetActive(false);
+                // }
+                //
+                // Session.ParticipantCanvas_GO.SetActive(false);
+
+                // if(!Session.WebBuild)
+                // {
+                //     ExperimenterDisplayCanvas.gameObject.SetActive(true);
+                //     ExperimenterDisplayGO.SetActive(true);
+                //     ExperimenterDisplayCanvas.transform.Find("Background").gameObject.SetActive(false); //Turn off the spinning background on the Exp Display now that session builder is done:
+                // }
+                // else
+                //     ExperimenterDisplayCanvas.gameObject.SetActive(false);
                
 
 
@@ -750,8 +768,10 @@ namespace USE_ExperimentTemplate_Session
             {
                 MainDirectionalLight.SetActive(false);
 
-                Session.ParticipantCanvas_GO.SetActive(true);
-                Session.ParticipantCanvas_LoadingText_GO.SetActive(true);
+                // Session.ParticipantCanvas_GO.SetActive(true);
+                // Session.ParticipantCanvas_LoadingText_GO.SetActive(true);
+                Session.LoadingController.ActivateLoadingCanvas(0); //0 for both web build and normal since monkeys on display 0;
+
 
                 TaskButtonsContainer.SetActive(false);
 
@@ -881,7 +901,7 @@ namespace USE_ExperimentTemplate_Session
 
                 Session.EventCodeManager.AddToFrameEventCodeBuffer("RunTaskStarts");
 
-                if(!Session.WebBuild)
+                if(!Session.WebBuild & !Session.SingleDisplayBuild)
                     AssignExperimenterDisplayRenderTexture(CurrentTask.TaskCam);
 
             });
@@ -1078,40 +1098,31 @@ namespace USE_ExperimentTemplate_Session
 
         private void FindGameObjects()
         {
-            // try
-            // {
+            try
+            {
                 GameObject miscScripts = GameObject.Find("MiscScripts");
                 Session.TimerController = miscScripts.GetComponent<TimerController>();
                 Session.LogWriter = miscScripts.GetComponent<LogWriter>();
                 Session.EventCodeManager = miscScripts.GetComponent<EventCodeManager>();
                 Session.FullScreenController = miscScripts.GetComponent<FullScreenController>();
-                Session.ApplicationQuit = miscScripts.GetComponent<ApplicationQuit>();
+                Session.LoadingController = GameObject.Find("LoadingCanvas").GetComponent<LoadingController>();
                 Session.InitCamGO = GameObject.Find("InitCamera");
                 Session.TaskSelectionCanvasGO = GameObject.Find("TaskSelectionCanvas");
-
-                Session.ParticipantCanvas_GO = GameObject.Find("ParticipantCanvas");
-                Session.ParticipantCanvas_LoadingText_GO = Session.ParticipantCanvas_GO.transform.Find("LoadingText").gameObject;
-
-                Session.MainExperimenterCanvas_GO = GameObject.Find("ExperimenterMainCanvas");
-                Session.MainExperimenterCanvas_LoadingText_GO = Session.MainExperimenterCanvas_GO.transform.Find("LoadingText").gameObject;
-
                 Session.SessionDataControllers = new SessionDataControllers(GameObject.Find("DataControllers"));
                 HumanVersionToggleButton = GameObject.Find("HumanVersionToggleButton");
                 ToggleAudioButton = GameObject.Find("AudioButton");
                 RedAudioCross = ToggleAudioButton.transform.Find("Cross").gameObject;
-                SavePanel = GameObject.Find("SavePanel");
-                SavePanel.SetActive(false);
 
                 MainDirectionalLight = GameObject.Find("Directional Light");
 
                 HumanVersionToggleButton.SetActive(false);
                 ToggleAudioButton.SetActive(false);
                 Session.TaskSelectionCanvasGO.SetActive(false); //have to find HumanVersionToggleButton and ToggleAudioButton before setting TaskSelectionCanvas inactive.
-            // }
-            // catch (Exception e)
-            // {
-            //     Debug.LogError("FAILED FINDING GAMEOBJECTS! Error Message: " + e.Message);
-            // }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("FAILED FINDING GAMEOBJECTS! Error Message: " + e.Message);
+            }
         }
 
         private void LoadPrefabs()
@@ -1150,7 +1161,7 @@ namespace USE_ExperimentTemplate_Session
 
             ExperimenterDisplayCanvas = ExperimenterDisplay_Parent.transform.Find("ExperimenterCanvas").GetComponent<Canvas>();
 
-            if (Session.WebBuild)
+            if (Session.WebBuild | Session.SingleDisplayBuild)
                 ExperimenterDisplayCanvas.targetDisplay = 0;
 
             ExperimenterDisplayGO = ExperimenterDisplayCanvas.transform.Find("ExpDisplay").gameObject;
@@ -1406,6 +1417,7 @@ namespace USE_ExperimentTemplate_Session
         public void OnGUI()
         {
             if (CameraRenderTexture == null) return;
+            if (Session.SingleDisplayBuild) return;
             GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), CameraRenderTexture);
         }
         

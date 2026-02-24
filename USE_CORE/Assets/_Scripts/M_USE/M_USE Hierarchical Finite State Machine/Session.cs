@@ -42,6 +42,11 @@ public static class Session
 {
     public static bool WebBuild;
     public static bool Using2DStim;
+    
+    
+    public static bool SingleDisplayBuild = true;
+    public static bool SkipIntros = true;
+    public static bool UseDefaultLocalPaths = true;
 
     public static readonly string DefaultStimFolderPath = "DefaultResources/Stimuli";
     public static readonly string DefaultContextFolderPath = "DefaultResources/Contexts";
@@ -54,7 +59,6 @@ public static class Session
     public static bool UsingServerConfigs;
     public static bool StoringDataLocally;
     public static bool StoringDataOnServer;
-    public static bool UseDefaultLocalPaths = true;
     public static bool StoreData
     {
         get
@@ -66,6 +70,7 @@ public static class Session
     public static CameraSyncController CameraSyncController;
     public static FullScreenController FullScreenController;
     public static SessionAudioController SessionAudioController;
+    public static LoadingController LoadingController;
     public static TimerController TimerController;
 
     public static SessionInfoPanel SessionInfoPanel;

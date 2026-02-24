@@ -258,6 +258,8 @@ namespace USE_Def_Namespace
         public float SessionSummaryDuration = 180f;
 
         public bool UseDigilentDevice;
+        
+        public Vector3 ConstantBackgroundColour;
     }
 
     public class TaskDef
@@ -287,6 +289,12 @@ namespace USE_Def_Namespace
         /// </summary>
         public string ExternalStimExtension;
 
+        
+        public string TaskInstructionsVideoPath;
+        public string TaskInstructionsSlidesFolderPath;
+        public string TaskInstructionsPreVideoSlidesFolderPath;
+        public string TaskInstructionsPostVideoSlidesFolderPath;
+        
         /// <summary>
         /// A list of feature names associated with the task.
         /// </summary>
@@ -373,8 +381,6 @@ namespace USE_Def_Namespace
         /// Whether or not the task has an associated instruction video to play at start.
         /// </summary>
         public bool TaskInstructionsVideoActive;
-
-        public string TaskInstructionsVideoPath;
 
     }
 
