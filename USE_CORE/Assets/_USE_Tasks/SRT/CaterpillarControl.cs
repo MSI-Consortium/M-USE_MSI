@@ -21,19 +21,19 @@ public class CaterpillarControl : MonoBehaviour
     public bool catIsOn = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public void InitCat()
+    public void InitCat(string portstring)
     {
 
-        string[] ports = SerialPort.GetPortNames();
-        Debug.Log("Ports: ");
-        for (int i = 0; i < ports.Length; i++)
-        {
-            Debug.Log(ports[i]);
-        }
-
-        string portname = "/dev/tty.usbserial-AV0K3FPG";
+        // string[] ports = SerialPort.GetPortNames();
+        // Debug.Log("Ports: ");
+        // for (int i = 0; i < ports.Length; i++)
+        // {
+        //     Debug.Log(ports[i]);
+        // }
+        //
+        // string portname = "/dev/tty.usbserial-AV0K3FPG";
         // Create a new SerialPort object with caterpillar settings.
-        _serialPort = new SerialPort(portname, 250000, Parity.None, 8, StopBits.One);
+        _serialPort = new SerialPort(portstring, 250000, Parity.None, 8, StopBits.One);
         _serialPort.ReadTimeout = 500;
         _serialPort.Open();
 

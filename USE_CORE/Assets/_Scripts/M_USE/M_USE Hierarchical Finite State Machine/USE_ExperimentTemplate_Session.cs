@@ -463,13 +463,15 @@ namespace USE_ExperimentTemplate_Session
             });
             sessionBuilder.SpecifyTermination(() => SessionBuilder.RunButtonClicked && Session.SessionDef.EyeTrackerActive, loadGazeCalibration, () =>
             {
+                initScreen_Level.InitScreenCanvas_GO.SetActive(false);
                 LoadGazeGameObjects();
                 gazeCalibration.AddChildLevel(Session.GazeCalibrationController.GazeCalibrationTaskLevel);
                 Session.GazeCalibrationController.RunCalibration = true;
                 SessionBuilderGO.SetActive(false);
 
             });
-            sessionBuilder.SpecifyTermination(() => SessionBuilder.RunButtonClicked, selectTask);
+            sessionBuilder.SpecifyTermination(() => SessionBuilder.RunButtonClicked, selectTask,
+                () => initScreen_Level.InitScreenCanvas_GO.SetActive(false));
 
             sessionBuilder.AddDefaultTerminationMethod(() =>
             {

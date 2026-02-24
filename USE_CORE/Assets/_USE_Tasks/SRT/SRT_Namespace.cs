@@ -34,6 +34,7 @@ namespace SRT_Namespace
         public float VisualDelayOnAvTrials;
         public float VisualDelayOnVtTrials;
         public float TactileDelayOnTaTrials;
+        public string CaterpillarPort;
     }
 
     public class SRT_BlockDef : BlockDef
@@ -52,7 +53,33 @@ namespace SRT_Namespace
         public string ResponseChar;
         public int N_Trials;
         public float VisualStimDVA;
-        
+
+
+        private void MakeSRTTrial(int? iVis, int? iAud, int? iTac)
+        {
+            SRT_TrialDef td = new SRT_TrialDef();
+            td.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
+            td.Stim_Dur = Stim_Dur;
+            td.Resp_MaxDur = Resp_MaxDur;
+            if (iVis != null)
+                td.VisualStim_Index = VisualStimIndices[iVis.Value];
+            else
+                td.VisualStim_Index = null;
+            if (iAud != null)
+                td.AudioStim_Index = AudioStimIndices[iAud.Value];
+            else
+                td.AudioStim_Index = null;
+            if (iTac != null)
+                td.TactileStim_Index = TactileStimIndices[iTac.Value];
+            else
+                td.TactileStim_Index = null;
+            td.FixCrossStimIndex = FixCrossStimIndex;
+            td.VisualStim_Loc = new Vector3(0, 0, 0);
+            td.AudioStim_Loc = new Vector3(0, 0, 0);
+            td.ResponseChar = ResponseChar;
+            td.VisualStimDVA = VisualStimDVA;
+            TrialDefs.Add(td);
+        }
         
         public override void GenerateTrialDefsFromBlockDef()
         {
@@ -62,194 +89,72 @@ namespace SRT_Namespace
             //Generate all possible combinations of visual and auditory stimuli, and equal numbers of visual-only / auditory-only stimuli 
             for (int iVis = 0; iVis < VisualStimIndices.Length; iVis++)
             {
+                MakeSRTTrial(iVis, null, null); //visual only trial
                 for (int iAud = 0; iAud < AudioStimIndices.Length; iAud++)
                 {
+                    MakeSRTTrial(iVis, iAud, null); //AV trial
                     for (int iTac = 0; iTac < TactileStimIndices.Length; iTac++)
                     {
-                        //combo trial 1 - AV
-                        SRT_TrialDef td_av = new SRT_TrialDef();
-                        td_av.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                        td_av.Stim_Dur = Stim_Dur;
-                        td_av.Resp_MaxDur = Resp_MaxDur;
-                        td_av.VisualStim_Index = VisualStimIndices[iVis];
-                        td_av.AudioStim_Index = AudioStimIndices[iAud];
-                        td_av.TactileStim_Index = null;
-                        td_av.FixCrossStimIndex = FixCrossStimIndex;
-                        td_av.VisualStim_Loc = new Vector3(0, 0, 0);
-                        td_av.AudioStim_Loc = new Vector3(0, 0, 0);
-                        td_av.ResponseChar = ResponseChar;
-                        td_av.VisualStimDVA = VisualStimDVA;
-                        TrialDefs.Add(td_av);
-                        
-                        SRT_TrialDef td_at = new SRT_TrialDef();
-                        td_at.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                        td_at.Stim_Dur = Stim_Dur;
-                        td_at.Resp_MaxDur = Resp_MaxDur;
-                        td_at.AudioStim_Index = AudioStimIndices[iAud];
-                        td_at.TactileStim_Index = TactileStimIndices[iTac];
-                        td_at.VisualStim_Index = null;
-                        td_at.FixCrossStimIndex = FixCrossStimIndex;
-                        td_at.VisualStim_Loc = new Vector3(0, 0, 0);
-                        td_at.AudioStim_Loc = new Vector3(0, 0, 0);
-                        td_at.ResponseChar = ResponseChar;
-                        td_at.VisualStimDVA = VisualStimDVA;
-                        TrialDefs.Add(td_at);
-                        
-                        SRT_TrialDef td_vt = new SRT_TrialDef();
-                        td_vt.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                        td_vt.Stim_Dur = Stim_Dur;
-                        td_vt.Resp_MaxDur = Resp_MaxDur;
-                        td_vt.VisualStim_Index = VisualStimIndices[iVis];
-                        td_vt.TactileStim_Index = TactileStimIndices[iTac];
-                        td_vt.AudioStim_Index = null;
-                        td_vt.FixCrossStimIndex = FixCrossStimIndex;
-                        td_vt.VisualStim_Loc = new Vector3(0, 0, 0);
-                        td_vt.AudioStim_Loc = new Vector3(0, 0, 0);
-                        td_vt.ResponseChar = ResponseChar;
-                        td_vt.VisualStimDVA = VisualStimDVA;
-                        TrialDefs.Add(td_vt);
-
-                        if (!CheckTimingTest(() => Session.SessionDef.UseDigilentDevice))
-                        {
-                            //auditory only trial
-                            SRT_TrialDef td_audonly = new SRT_TrialDef();
-                            td_audonly.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                            td_audonly.Stim_Dur = Stim_Dur;
-                            td_audonly.Resp_MaxDur = Resp_MaxDur;
-                            td_audonly.VisualStim_Index = null;
-                            td_audonly.AudioStim_Index = AudioStimIndices[iAud];
-                            td_audonly.TactileStim_Index = null;
-                            td_audonly.FixCrossStimIndex = FixCrossStimIndex;
-                            td_audonly.VisualStim_Loc = new Vector3(0, 0, 0);
-                            td_audonly.AudioStim_Loc = new Vector3(0, 0, 0);
-                            td_audonly.ResponseChar = ResponseChar;
-                            td_audonly.VisualStimDVA = VisualStimDVA;
-                            TrialDefs.Add(td_audonly);
-
-                            //visual only trial
-                            SRT_TrialDef td_visonly = new SRT_TrialDef();
-                            td_visonly.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                            td_visonly.Stim_Dur = Stim_Dur;
-                            td_visonly.Resp_MaxDur = Resp_MaxDur;
-                            td_visonly.VisualStim_Index = VisualStimIndices[iVis];
-                            td_visonly.AudioStim_Index = null;
-                            td_visonly.TactileStim_Index = null;
-                            td_visonly.FixCrossStimIndex = FixCrossStimIndex;
-                            td_visonly.VisualStim_Loc = new Vector3(0, 0, 0);
-                            td_visonly.AudioStim_Loc = new Vector3(0, 0, 0);
-                            td_visonly.ResponseChar = ResponseChar;
-                            td_visonly.VisualStimDVA = VisualStimDVA;
-                            TrialDefs.Add(td_visonly);
-
-                            //tactile only trial
-                            SRT_TrialDef td_tacOnly = new SRT_TrialDef();
-                            td_tacOnly.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                            td_tacOnly.Stim_Dur = Stim_Dur;
-                            td_tacOnly.Resp_MaxDur = Resp_MaxDur;
-                            td_tacOnly.TactileStim_Index = TactileStimIndices[iTac];
-                            td_tacOnly.AudioStim_Index = null;
-                            td_tacOnly.VisualStim_Index = null;
-                            td_tacOnly.FixCrossStimIndex = FixCrossStimIndex;
-                            td_tacOnly.VisualStim_Loc = new Vector3(0, 0, 0);
-                            td_tacOnly.AudioStim_Loc = new Vector3(0, 0, 0);
-                            td_tacOnly.ResponseChar = ResponseChar;
-                            td_tacOnly.VisualStimDVA = VisualStimDVA;
-                            TrialDefs.Add(td_tacOnly);
-                        }
+                        MakeSRTTrial(iVis, iAud, iTac); //AVT trial
                     }
                 }
             }
 
-            //add extra trials (randomly selected) until we get the right number of trials
-            //added in groups of 3 to be able to maintain 33% AV, A, V trials 
+            //have to have these non-nested loops to allow for cases where one modality is not included in the block def
+            for (int iAud = 0; iAud < AudioStimIndices.Length; iAud++)
+            {
+                MakeSRTTrial(null, iAud, null); //audio only trial
+                for (int iTac = 0; iTac < TactileStimIndices.Length; iTac++)
+                {
+                    MakeSRTTrial(null, iAud, iTac); //AT trial
+                }
+            }
+            
+            for (int iTac = 0; iTac < TactileStimIndices.Length; iTac++)
+            {
+                MakeSRTTrial(null, null, iTac); //tactile only trial
+                for (int iVis = 0; iVis < VisualStimIndices.Length; iVis++)
+                {
+                    MakeSRTTrial(iVis, null, iTac); //VT trial
+                }
+            }
+
+            //add extra trials (randomly selected stimuli from each modality) until we get the right number of trials,
+            //maintaining equal numbers of each possible trial type
             while (TrialDefs.Count < N_Trials)
             {
-                SRT_TrialDef td_av = new SRT_TrialDef();
-                td_av.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                td_av.Stim_Dur = Stim_Dur;
-                td_av.Resp_MaxDur = Resp_MaxDur;
-                td_av.VisualStim_Index = VisualStimIndices[Random.Range(0, VisualStimIndices.Length)];
-                td_av.AudioStim_Index = AudioStimIndices[Random.Range(0, AudioStimIndices.Length)];
-                td_av.TactileStim_Index = null;
-                td_av.FixCrossStimIndex = FixCrossStimIndex;
-                td_av.VisualStim_Loc = new Vector3(0, 0, 0);
-                td_av.AudioStim_Loc = new Vector3(0, 0, 0);
-                td_av.ResponseChar = ResponseChar;
-                td_av.VisualStimDVA = VisualStimDVA;
-                TrialDefs.Add(td_av);
-                
-                SRT_TrialDef td_at = new SRT_TrialDef();
-                td_at.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                td_at.Stim_Dur = Stim_Dur;
-                td_at.Resp_MaxDur = Resp_MaxDur;
-                td_at.AudioStim_Index = AudioStimIndices[Random.Range(0, AudioStimIndices.Length)];
-                td_at.TactileStim_Index = TactileStimIndices[Random.Range(0, TactileStimIndices.Length)];
-                td_at.VisualStim_Index = null;
-                td_at.FixCrossStimIndex = FixCrossStimIndex;
-                td_at.VisualStim_Loc = new Vector3(0, 0, 0);
-                td_at.AudioStim_Loc = new Vector3(0, 0, 0);
-                td_at.ResponseChar = ResponseChar;
-                td_at.VisualStimDVA = VisualStimDVA;
-                TrialDefs.Add(td_at);
-                        
-                SRT_TrialDef td_vt = new SRT_TrialDef();
-                td_vt.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                td_vt.Stim_Dur = Stim_Dur;
-                td_vt.Resp_MaxDur = Resp_MaxDur;
-                td_vt.VisualStim_Index = VisualStimIndices[Random.Range(0, VisualStimIndices.Length)];
-                td_vt.TactileStim_Index = TactileStimIndices[Random.Range(0, TactileStimIndices.Length)];
-                td_vt.AudioStim_Index = null;
-                td_vt.FixCrossStimIndex = FixCrossStimIndex;
-                td_vt.VisualStim_Loc = new Vector3(0, 0, 0);
-                td_vt.AudioStim_Loc = new Vector3(0, 0, 0);
-                td_vt.ResponseChar = ResponseChar;
-                td_vt.VisualStimDVA = VisualStimDVA;
-                TrialDefs.Add(td_vt);
-
-                if (!CheckTimingTest(()=>Session.SessionDef.UseDigilentDevice))
+                if (VisualStimIndices.Length > 0)
                 {
-                    SRT_TrialDef td_audonly = new SRT_TrialDef();
-                    td_audonly.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                    td_audonly.Stim_Dur = Stim_Dur;
-                    td_audonly.Resp_MaxDur = Resp_MaxDur;
-                    td_audonly.VisualStim_Index = null;
-                    td_audonly.AudioStim_Index = AudioStimIndices[Random.Range(0, AudioStimIndices.Length)];
-                    td_av.TactileStim_Index = null;
-                    td_audonly.FixCrossStimIndex = FixCrossStimIndex;
-                    td_audonly.VisualStim_Loc = new Vector3(0, 0, 0);
-                    td_audonly.AudioStim_Loc = new Vector3(0, 0, 0);
-                    td_audonly.ResponseChar = ResponseChar;
-                    td_audonly.VisualStimDVA = VisualStimDVA;
-                    TrialDefs.Add(td_audonly);
+                    MakeSRTTrial(Random.Range(0, VisualStimIndices.Length), null, null);
+                    if (AudioStimIndices.Length > 0)
+                    {
+                        MakeSRTTrial(Random.Range(0, VisualStimIndices.Length),
+                            Random.Range(0, AudioStimIndices.Length), null);
+                        if (TactileStimIndices.Length > 0)
+                            MakeSRTTrial(Random.Range(0, VisualStimIndices.Length),
+                                Random.Range(0, AudioStimIndices.Length), Random.Range(0, TactileStimIndices.Length));
+                    }
+                }
 
-                    SRT_TrialDef td_visonly = new SRT_TrialDef();
-                    td_visonly.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                    td_visonly.Stim_Dur = Stim_Dur;
-                    td_visonly.Resp_MaxDur = Resp_MaxDur;
-                    td_visonly.VisualStim_Index = VisualStimIndices[Random.Range(0, VisualStimIndices.Length)];
-                    td_visonly.AudioStim_Index = null;
-                    td_av.TactileStim_Index = null;
-                    td_visonly.FixCrossStimIndex = FixCrossStimIndex;
-                    td_visonly.VisualStim_Loc = new Vector3(0, 0, 0);
-                    td_visonly.AudioStim_Loc = new Vector3(0, 0, 0);
-                    td_visonly.ResponseChar = ResponseChar;
-                    td_visonly.VisualStimDVA = VisualStimDVA;
-                    TrialDefs.Add(td_visonly);
+                if (AudioStimIndices.Length > 0)
+                {
+                    MakeSRTTrial(null, Random.Range(0, AudioStimIndices.Length), null);
+                    if (VisualStimIndices.Length > 0)
+                    {
+                        MakeSRTTrial(Random.Range(0, VisualStimIndices.Length),
+                            Random.Range(0, AudioStimIndices.Length), null);
+                    }
+                }
+
+                if (TactileStimIndices.Length > 0)
+                {
+                    MakeSRTTrial(null, null, Random.Range(0, TactileStimIndices.Length));
                     
-                    
-                    SRT_TrialDef td_tacOnly = new SRT_TrialDef();
-                    td_tacOnly.PreStimDur = Random.Range(PreStim_MinDur, PreStim_MaxDur);
-                    td_tacOnly.Stim_Dur = Stim_Dur;
-                    td_tacOnly.Resp_MaxDur = Resp_MaxDur;
-                    td_tacOnly.TactileStim_Index = TactileStimIndices[Random.Range(0, TactileStimIndices.Length)];
-                    td_tacOnly.AudioStim_Index = null;
-                    td_tacOnly.VisualStim_Index = null;
-                    td_tacOnly.FixCrossStimIndex = FixCrossStimIndex;
-                    td_tacOnly.VisualStim_Loc = new Vector3(0, 0, 0);
-                    td_tacOnly.AudioStim_Loc = new Vector3(0, 0, 0);
-                    td_tacOnly.ResponseChar = ResponseChar;
-                    td_tacOnly.VisualStimDVA = VisualStimDVA;
-                    TrialDefs.Add(td_tacOnly);
+                    if (VisualStimIndices.Length > 0)
+                    {
+                        MakeSRTTrial(Random.Range(0, VisualStimIndices.Length),
+                            null, Random.Range(0, TactileStimIndices.Length));
+                    }
                 }
             }
 

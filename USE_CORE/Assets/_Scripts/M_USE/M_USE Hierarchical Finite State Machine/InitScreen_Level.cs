@@ -185,8 +185,8 @@ public class InitScreen_Level : ControlLevel
             SetConfigInfo();
             SetDataInfo();
 
-            // InitScreen_GO.SetActive(false);
-            InitScreenCanvas_GO.SetActive(false);
+            InitScreen_GO.SetActive(false);
+            // InitScreenCanvas_GO.SetActive(false);
 
             Session.LoadingController.ActivateLoadingCanvas(Session.WebBuild | Session.SingleDisplayBuild ? 0 : 1); //turn on loading canvas/circle so that it immedietely shows its loading!
 

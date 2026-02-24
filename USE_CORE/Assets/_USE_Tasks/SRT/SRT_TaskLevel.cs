@@ -28,7 +28,7 @@ public class SRT_TaskLevel : ControlLevel_Task_Template
             USE_CoordinateConverter.SetEyeDistance(60);
             //initialize serrial port for tactile stims
             //Session.SerialPortController.Initialize();
-            catControl.InitCat();
+            catControl.InitCat(GetTaskDef<SRT_TaskDef>().CaterpillarPort);
         });
         
         SetupBlock.AddDefaultInitializationMethod(() =>
