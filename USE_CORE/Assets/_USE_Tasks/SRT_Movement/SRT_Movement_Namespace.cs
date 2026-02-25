@@ -23,7 +23,8 @@ namespace SRT_Movement_Namespace
         //public List<string[]> FeatureNames;
         //public string neutralPatternedColorName;
         //public float? ExternalStimScale;
-        public string InterBlockSlidePath;
+        public string InterBlockMovementSlidePath;
+        public string InterBlockNoMovementSlidePath;
         public string InterBlockVideoPath;
         public string LongTimeWarningSlidePath;
         public string LongTimeWarningVideoPath;

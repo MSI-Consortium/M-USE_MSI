@@ -42,8 +42,14 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
             else
             {
                 movementMod = Random.Range(1, 3);
-            }
                 
+            }
+            if (movementMod == 1)
+                GetTaskDef<SRT_Movement_TaskDef>().TaskInstructionsPostVideoSlidesFolderPath =
+                    GetTaskDef<SRT_Movement_TaskDef>().InterBlockMovementSlidePath;
+            else
+                GetTaskDef<SRT_Movement_TaskDef>().TaskInstructionsPostVideoSlidesFolderPath =
+                    GetTaskDef<SRT_Movement_TaskDef>().InterBlockNoMovementSlidePath;
         });
         
         SetupBlock.AddDefaultInitializationMethod(() =>
@@ -87,23 +93,28 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
         // bool videoStarted = false;
         // bool videoFinished = false;
         // int startFrame = 0;
-        BlockFeedback.AddUniversalInitializationMethod(()=>
+        BlockFeedback.AddUniversalInitializationMethod(() =>
         {
-             
-            
+            if (BlockCount % movementMod == 0)
+                taskInstructions_Level.postVideoSlideFolderPath =
+                    GetTaskDef<SRT_Movement_TaskDef>().InterBlockMovementSlidePath;
+            else
+                taskInstructions_Level.postVideoSlideFolderPath =
+                    GetTaskDef<SRT_Movement_TaskDef>().InterBlockNoMovementSlidePath;
+
             blockFeedbackFinished = false;
             taskInstructions_Level.preVideoSlideFolderPath = "";
-            taskInstructions_Level.postVideoSlideFolderPath = GetTaskDef<SRT_Movement_TaskDef>().InterBlockSlidePath;
             taskInstructions_Level.videoPath = GetTaskDef<SRT_Movement_TaskDef>().InterBlockVideoPath;
-            
+
             SliderControl.Slider.gameObject.SetActive(true);
             // startFrame = Time.frameCount;
-            Debug.Log("BLOCK COUNT: " + currentBlockDef.BlockCount + ", TOTAL BLOCKS: " + BlockDefs.Length + ", VALUE: " + ((float)currentBlockDef.BlockCount / BlockDefs.Length));
+            Debug.Log("BLOCK COUNT: " + currentBlockDef.BlockCount + ", TOTAL BLOCKS: " + BlockDefs.Length +
+                      ", VALUE: " + ((float)currentBlockDef.BlockCount / BlockDefs.Length));
             SliderControl.TargetValue = (float)currentBlockDef.BlockCount / BlockDefs.Length;
             Debug.Log("TARGET VALUE: " + SliderControl.TargetValue);
-            
+
             SliderControl.AnimationOn = true;
-            
+
         });
         // BlockFeedback.AddUpdateMethod(()=>
         // {
