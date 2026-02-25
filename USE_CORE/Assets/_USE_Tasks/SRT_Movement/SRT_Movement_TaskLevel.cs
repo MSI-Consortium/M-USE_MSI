@@ -89,7 +89,7 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
         // int startFrame = 0;
         BlockFeedback.AddUniversalInitializationMethod(()=>
         {
-            if 
+             
             
             blockFeedbackFinished = false;
             taskInstructions_Level.preVideoSlideFolderPath = "";

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.IO.Ports;
+using System.Linq;
 // using System;
 // using System.Buffers;
 
@@ -23,8 +24,10 @@ public class CaterpillarControl : MonoBehaviour
     public void InitCat(string portstring)
     {
 
-        // string[] ports = SerialPort.GetPortNames();
-        // Debug.Log("Ports: ");
+        string[] ports = SerialPort.GetPortNames();
+        if(!ports.Contains(portstring))
+            Debug.LogError("[CaterpillarControl] Port not found: " + portstring);
+            // Debug.Log("Ports: ");
         // for (int i = 0; i < ports.Length; i++)
         // {
         //     Debug.Log(ports[i]);
