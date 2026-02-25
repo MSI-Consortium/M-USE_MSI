@@ -44,7 +44,8 @@ public class CaterpillarControl : MonoBehaviour
         stop = 0x00;         // stop the stimulus (we add other zeroes in the end of the byte array for safety)
         setTacFreq = 0x20;          // value to tell caterpillar you want to set vibration frequency
         setAudFreq = 0x24;
-        vibFreq = 0x60;         // the frequency you want to set (refer to manual)
+        vibFreq = 0x68;         // the frequency you want to set (refer to manual)
+        audFreq = 0x60;         // the frequency you want to set (refer to manual)
         
         
         cmd_onAud = new byte[6];
@@ -59,6 +60,20 @@ public class CaterpillarControl : MonoBehaviour
         //define cmd on/off Aud + Vis
         //define setAudFreq
 
+        cmd_onAud[0] = (byte)module;
+        cmd_onAud[1] = (byte)audStim;
+        cmd_onAud[2] = (byte)start;
+        cmd_onAud[3] = (byte)stop;
+        cmd_onAud[4] = (byte)stop;
+        cmd_onAud[5] = (byte)stop;
+
+        cmd_offAud[0] = (byte)module;
+        cmd_offAud[1] = (byte)audStim;
+        cmd_offAud[2] = (byte)stop;
+        cmd_offAud[3] = (byte)stop;
+        cmd_offAud[4] = (byte)stop;
+        cmd_offAud[5] = (byte)stop;
+        
         cmd_onTac[0] = (byte)module;
         cmd_onTac[1] = (byte)tacStim;
         cmd_onTac[2] = (byte)start;
@@ -72,6 +87,27 @@ public class CaterpillarControl : MonoBehaviour
         cmd_offTac[3] = (byte)stop;
         cmd_offTac[4] = (byte)stop;
         cmd_offTac[5] = (byte)stop;
+        
+        cmd_onVis[0] = (byte)module;
+        cmd_onVis[1] = (byte)visStim;
+        cmd_onVis[2] = (byte)start;
+        cmd_onVis[3] = (byte)stop;
+        cmd_onVis[4] = (byte)stop;
+        cmd_onVis[5] = (byte)stop;
+
+        cmd_offVis[0] = (byte)module;
+        cmd_offVis[1] = (byte)visStim;
+        cmd_offVis[2] = (byte)stop;
+        cmd_offVis[3] = (byte)stop;
+        cmd_offVis[4] = (byte)stop;
+        cmd_offVis[5] = (byte)stop;
+
+        cmd_setAudFreq[0] = (byte)module;
+        cmd_setAudFreq[1] = (byte)setAudFreq;
+        cmd_setAudFreq[2] = (byte)audFreq;
+        cmd_setAudFreq[3] = (byte)stop;
+        cmd_setAudFreq[4] = (byte)stop;
+        cmd_setAudFreq[5] = (byte)stop;
 
         cmd_setTacFreq[0] = (byte)module;
         cmd_setTacFreq[1] = (byte)setTacFreq;
@@ -80,18 +116,43 @@ public class CaterpillarControl : MonoBehaviour
         cmd_setTacFreq[4] = (byte)stop;
         cmd_setTacFreq[5] = (byte)stop;
 
+        _serialPort.Write(cmd_setAudFreq, 0, cmd_setAudFreq.Length); //set vibration frequency at the beginning
         _serialPort.Write(cmd_setTacFreq, 0, cmd_setTacFreq.Length); //set vibration frequency at the beginning
         
     }
 
-    public void TurnTactileStimOn()
+    
+    
+    public void StimOn(string stimType)
     {
-        _serialPort.Write(cmd_onTac, 0, cmd_onTac.Length);
+        switch (stimType.ToLower())
+        {
+            case "aud":
+                _serialPort.Write(cmd_onAud, 0, cmd_onAud.Length);
+                break;
+            case "tac":
+                _serialPort.Write(cmd_onTac, 0, cmd_onTac.Length);
+                break;
+            case "vis":
+                _serialPort.Write(cmd_onVis, 0, cmd_onVis.Length);
+                break;
+        }
     }
 
-    public void TurnTactileStimOff()
+    public void StimOff(string stimType)
     {
-        _serialPort.Write(cmd_offTac, 0, cmd_offTac.Length);
+        switch (stimType.ToLower())
+        {
+            case "aud":
+                _serialPort.Write(cmd_offAud, 0, cmd_offAud.Length);
+                break;
+            case "tac":
+                _serialPort.Write(cmd_offTac, 0, cmd_offTac.Length);
+                break;
+            case "vis":
+                _serialPort.Write(cmd_offVis, 0, cmd_offVis.Length);
+                break;
+        }
     }
     
     // Update is called once per frame

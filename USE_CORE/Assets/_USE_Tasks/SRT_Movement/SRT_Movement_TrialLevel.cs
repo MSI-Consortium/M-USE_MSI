@@ -44,6 +44,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
     public override void DefineControlLevel()
     {
         State PreStim = new State("PreStim");
+        State StimPresentation = new State("StimPresentation");
         State AudioStimPresentation = new State("AudioPrep");
         State TactilePrep = new State("TactilePrep");
         State VisualTactileStimPresentation = new State("VisualTactileStimPresentation");
@@ -52,7 +53,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
         State TimeWarning = new State("TimeWarning");
         
         State nextState = new State("nextState"); 
-        AddActiveStates(new List<State> { PreStim, AudioStimPresentation, TactilePrep, VisualTactileStimPresentation, Response, Feedback, TimeWarning, nextState });
+        AddActiveStates(new List<State> { PreStim, StimPresentation, Response, Feedback, TimeWarning, nextState });
         
         SimpleTrialData = (SRT_Movement_SimpleTrialData)Session.SessionDataControllers
             .InstantiateDataController<SRT_Movement_SimpleTrialData>(
@@ -128,8 +129,8 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
 
             rtWarningTriggered = false;
             fixCross.ToggleVisibility(true);
-            if (CurrentTrial.AudioStim_Index != null)
-                _audioSource = targetStimDef.AddAudioSource();
+            // if (CurrentTrial.AudioStim_Index != null)
+            //     _audioSource = targetStimDef.AddAudioSource();
             if (CurrentTrial.VisualStim_Index == null)
                 TrialModality = 1;
             else if (CurrentTrial.AudioStim_Index == null)
@@ -186,50 +187,72 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
         });
         
         //replace audioDelay with general purpose delay
-        PreStim.AddTimer(()=>CurrentTrial.PreStimDur - audioDelay, ()=> nextState, () =>
+        PreStim.AddTimer(()=>CurrentTrial.PreStimDur - audioDelay, StimPresentation, () =>
         {
         });
         PreStim.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
 
+        
+        StimPresentation.AddDefaultInitializationMethod(() =>
+        {
+            if(CurrentTrial.AudioStim_Index != null)
+                catControl.StimOn("Aud");
+            if(CurrentTrial.TactileStim_Index != null)
+                catControl.StimOn("Tac");
+            if(CurrentTrial.VisualStim_Index != null)
+                catControl.StimOn("Vis");
+        });
+        StimPresentation.AddTimer(()=>CurrentTrial.Stim_Dur, Response, () =>
+        {
+            if(CurrentTrial.AudioStim_Index != null)
+                catControl.StimOff("Aud");
+            if(CurrentTrial.TactileStim_Index != null)
+                catControl.StimOff("Tac");
+            if(CurrentTrial.VisualStim_Index != null)
+                catControl.StimOff("Vis");
+        });
+
+        
+        
         //Handle both tactile and visual stimuli?
-        AudioStimPresentation.StateInitializationFinished += PlaySound;
-        AudioStimPresentation.AddUpdateMethod(() =>
-        {
-            if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
-                    CurrentTrial.ResponseChar.ToUpper())))
-            {
-                LSL_Manager.PushSample("-1");
-                ResponseString = "Responded";
-                RT = null;
-            }
-        });
-        AudioStimPresentation.AddTimer(()=> GetTaskDef<SRT_Movement_TaskDef>().VisualDelayOnAvTrials, VisualTactileStimPresentation);
-        AudioStimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
+        // AudioStimPresentation.StateInitializationFinished += PlaySound;
+        // AudioStimPresentation.AddUpdateMethod(() =>
+        // {
+        //     if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
+        //             CurrentTrial.ResponseChar.ToUpper())))
+        //     {
+        //         LSL_Manager.PushSample("-1");
+        //         ResponseString = "Responded";
+        //         RT = null;
+        //     }
+        // });
+        // AudioStimPresentation.AddTimer(()=> GetTaskDef<SRT_Movement_TaskDef>().VisualDelayOnAvTrials, VisualTactileStimPresentation);
+        // AudioStimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
         
-        // StimPresentation.AddDefaultInitializationMethod
-        //Assuming for now that visual/tactile delay is minimal
-        VisualTactileStimPresentation.StateInitializationFinished += PrepareVisualTactileStim;
-        
-        VisualTactileStimPresentation.AddUpdateMethod(() =>
-        {
-            if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
-                    CurrentTrial.ResponseChar.ToUpper())))
-            {
-                LSL_Manager.PushSample("2");
-                ResponseString = "Responded";
-                RT = Time.time - VisualTactileStimPresentation.TimingInfo.StartTimeAbsolute;
-            }
-        });
-        VisualTactileStimPresentation.AddTimer(()=>CurrentTrial.Stim_Dur, Response, () =>
-        {
-            //send tactile stim off signal
-            catControl.TurnTactileStimOff();
-        });
-        VisualTactileStimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback, ()=>
-        {
-            //send tactile stim off signal
-            catControl.TurnTactileStimOff();
-        });
+        // // StimPresentation.AddDefaultInitializationMethod
+        // //Assuming for now that visual/tactile delay is minimal
+        // VisualTactileStimPresentation.StateInitializationFinished += PrepareVisualTactileStim;
+        //
+        // VisualTactileStimPresentation.AddUpdateMethod(() =>
+        // {
+        //     if (InputBroker.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode),
+        //             CurrentTrial.ResponseChar.ToUpper())))
+        //     {
+        //         LSL_Manager.PushSample("2");
+        //         ResponseString = "Responded";
+        //         RT = Time.time - VisualTactileStimPresentation.TimingInfo.StartTimeAbsolute;
+        //     }
+        // });
+        // VisualTactileStimPresentation.AddTimer(()=>CurrentTrial.Stim_Dur, Response, () =>
+        // {
+        //     //send tactile stim off signal
+        //     // catControl.StimOff();
+        // });
+        // VisualTactileStimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback, ()=>
+        // {
+        //     //send tactile stim off signal
+        //     // catControl.StimOff();
+        // });
         
         Response.AddDefaultInitializationMethod(()=>
         {
@@ -319,7 +342,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
         if (CurrentTrial.TactileStim_Index != null)
         {
             lslstring += (CurrentTrial.TactileStim_Index + 1);
-            catControl.TurnTactileStimOn();
+            // catControl.StimOn();
         }
         else
             lslstring += 0;
@@ -346,40 +369,40 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
         //Define StimGroups consisting of StimDefs whose gameobjects will be loaded at TrialLevel_SetupTrial and 
         //destroyed at TrialLevel_Finish
 
-        StimGroup availableStims = Session.UsingDefaultConfigs ? PrefabStims : ExternalStims;
-
-
-        if (CurrentTrial.VisualStim_Index != null)
-        {
-            StimGroup visStims = new StimGroup("VisStim", availableStims, new List<int> { CurrentTrial.VisualStim_Index.Value });
-            visStims.SetLocations(new List<Vector3> { CurrentTrial.VisualStim_Loc });
-            visStims.SetVisibilityOnOffStates(GetStateFromName("VisualTactileStimPresentation"),
-                GetStateFromName("VisualTactileStimPresentation"));
-            // if (visStims.stimDefs[0].StimGameObject != null)
-            //     visStims.stimDefs[0].StimAudioSource = visStims.stimDefs[0].StimGameObject.AddComponent<AudioSource>();
-            // _audioSource = visStims.stimDefs[0].StimAudioSource;
-            if (CurrentTrial.VisualStimDVA != 0)
-            {
-                foreach (StimDef sd in visStims.stimDefs)
-                {
-                    // sd.StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
-                    //     "monitordva", 60).Value;
-                }
-            }
-
-            TrialStims.Add(visStims);
-        }
-        if (CurrentTrial.AudioStim_Index != null)
-        {
-            StimGroup audStims = new StimGroup("AudStims");
-            audStims.AddStims(new GameObject("AudioStim"));
-            audStims.SetLocations(new List<Vector3> { CurrentTrial.AudioStim_Loc });
-            // if (audStims.stimDefs[0].StimGameObject != null)
-            //     audStims.stimDefs[0].StimAudioSource = audStims.stimDefs[0].StimGameObject.AddComponent<AudioSource>();
-            // _audioSource = audStims.stimDefs[0].StimAudioSource;
-            TrialStims.Add(audStims);
-            targetStimDef = audStims.stimDefs[0];
-        }
+        // StimGroup availableStims = Session.UsingDefaultConfigs ? PrefabStims : ExternalStims;
+        //
+        //
+        // if (CurrentTrial.VisualStim_Index != null)
+        // {
+        //     StimGroup visStims = new StimGroup("VisStim", availableStims, new List<int> { CurrentTrial.VisualStim_Index.Value });
+        //     visStims.SetLocations(new List<Vector3> { CurrentTrial.VisualStim_Loc });
+        //     visStims.SetVisibilityOnOffStates(GetStateFromName("VisualTactileStimPresentation"),
+        //         GetStateFromName("VisualTactileStimPresentation"));
+        //     // if (visStims.stimDefs[0].StimGameObject != null)
+        //     //     visStims.stimDefs[0].StimAudioSource = visStims.stimDefs[0].StimGameObject.AddComponent<AudioSource>();
+        //     // _audioSource = visStims.stimDefs[0].StimAudioSource;
+        //     if (CurrentTrial.VisualStimDVA != 0)
+        //     {
+        //         foreach (StimDef sd in visStims.stimDefs)
+        //         {
+        //             // sd.StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
+        //             //     "monitordva", 60).Value;
+        //         }
+        //     }
+        //
+        //     TrialStims.Add(visStims);
+        // }
+        // if (CurrentTrial.AudioStim_Index != null)
+        // {
+        //     StimGroup audStims = new StimGroup("AudStims");
+        //     audStims.AddStims(new GameObject("AudioStim"));
+        //     audStims.SetLocations(new List<Vector3> { CurrentTrial.AudioStim_Loc });
+        //     // if (audStims.stimDefs[0].StimGameObject != null)
+        //     //     audStims.stimDefs[0].StimAudioSource = audStims.stimDefs[0].StimGameObject.AddComponent<AudioSource>();
+        //     // _audioSource = audStims.stimDefs[0].StimAudioSource;
+        //     TrialStims.Add(audStims);
+        //     targetStimDef = audStims.stimDefs[0];
+        // }
 
 
     }

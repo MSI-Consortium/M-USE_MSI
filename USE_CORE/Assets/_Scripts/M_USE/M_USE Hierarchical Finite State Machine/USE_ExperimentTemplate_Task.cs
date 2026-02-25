@@ -263,9 +263,6 @@ namespace USE_ExperimentTemplate_Task
 
                         if(Session.SessionDef.IsHuman)
                         {
-                            Debug.Log(Session.HumanStartPanel);
-                            Debug.Log(FrameData);
-                            Debug.Log(TaskName);
                             Session.HumanStartPanel.CreateHumanStartPanel(FrameData, canvas, TaskName);
                         }
 

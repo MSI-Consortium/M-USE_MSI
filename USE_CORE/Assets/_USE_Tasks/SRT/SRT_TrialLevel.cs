@@ -223,12 +223,12 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         VisualTactileStimPresentation.AddTimer(()=>CurrentTrial.Stim_Dur, Response, () =>
         {
             //send tactile stim off signal
-            catControl.TurnTactileStimOff();
+            // catControl.TurnTactileStimOff();
         });
         VisualTactileStimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback, ()=>
         {
             //send tactile stim off signal
-            catControl.TurnTactileStimOff();
+            // catControl.TurnTactileStimOff();
         });
         
         Response.AddDefaultInitializationMethod(()=>
@@ -319,7 +319,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         if (CurrentTrial.TactileStim_Index != null)
         {
             lslstring += (CurrentTrial.TactileStim_Index + 1);
-            catControl.TurnTactileStimOn();
+            // catControl.TurnTactileStimOn();
         }
         else
             lslstring += 0;

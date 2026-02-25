@@ -7,6 +7,7 @@ using USE_ExperimentTemplate_Task;
 using SRT_Movement_Namespace;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -17,6 +18,7 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
     public List<AudioClip> AudioClips;
     public SliderControl SliderControl;
     public CaterpillarControl catControl;
+    [FormerlySerializedAs("movementBlockFirst")] public int movementMod;
     
     // public SRT_SimpleTrialData SimpleTrialData;
     public override void DefineControlLevel()
@@ -29,6 +31,19 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
             //initialize serrial port for tactile stims
             //Session.SerialPortController.Initialize();
             catControl.InitCat(GetTaskDef<SRT_Movement_TaskDef>().CaterpillarPort);
+            
+            //check subject id to determine which block type is first
+            string lastLetter = Session.SubjectID.Substring(Session.SubjectID.Length - 1);
+            int lastDigit;
+            if (int.TryParse(lastLetter, out lastDigit))
+            {
+                movementMod = lastDigit % 2 + 1;
+            }
+            else
+            {
+                movementMod = Random.Range(1, 3);
+            }
+                
         });
         
         SetupBlock.AddDefaultInitializationMethod(() =>
@@ -74,6 +89,8 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
         // int startFrame = 0;
         BlockFeedback.AddUniversalInitializationMethod(()=>
         {
+            if 
+            
             blockFeedbackFinished = false;
             taskInstructions_Level.preVideoSlideFolderPath = "";
             taskInstructions_Level.postVideoSlideFolderPath = GetTaskDef<SRT_Movement_TaskDef>().InterBlockSlidePath;
