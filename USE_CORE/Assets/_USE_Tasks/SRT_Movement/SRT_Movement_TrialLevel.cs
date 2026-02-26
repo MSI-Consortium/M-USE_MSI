@@ -40,6 +40,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
     public DigilentDataController DigilentDataController;
     private int TrialModality, A_stim, V_stim = 0;
     public CaterpillarControl catControl;
+    public string movementtype;
 
     public override void DefineControlLevel()
     {
@@ -140,7 +141,8 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
             
             if (Session.SessionDef.UseDigilentDevice)
                 DigilentDataController.CreateNewTrialIndexedFile(TrialCount_InTask + 1, Session.FilePrefix);
-            
+            movementtype = CurrentTaskLevel.movementType;
+
         });
         TaskInstructions_Level taskInstructions_Level = GameObject.Find("ControlLevels").GetComponent<TaskInstructions_Level>();
         
@@ -420,11 +422,14 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
         TrialData.AddDatum("ResponseChar", ()=> CurrentTrial.ResponseChar);
         TrialData.AddDatum("RT", ()=> RT);
         TrialData.AddDatum("RT_Warning", ()=> rtWarningTriggered ? 1 : 0);
+        TrialData.AddDatum("MovementType", ()=> movementtype);
         
         SimpleTrialData.AddDatum("modality", ()=> TrialModality);
         SimpleTrialData.AddDatum("audio_stim", ()=> CurrentTrial.AudioStim_Index is null ? 0 : CurrentTrial.AudioStim_Index + 1);
         SimpleTrialData.AddDatum("visual_stim", ()=> CurrentTrial.VisualStim_Index is null ? 0 : CurrentTrial.VisualStim_Index + 1);
         SimpleTrialData.AddDatum("reaction_time", ()=> RT * 1000);
+        SimpleTrialData.AddDatum("MovementType", ()=> movementtype);
+        
 
         if (Session.SessionDef.UseDigilentDevice)
         {

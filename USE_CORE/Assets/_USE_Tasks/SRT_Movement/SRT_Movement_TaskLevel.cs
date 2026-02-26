@@ -15,11 +15,13 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
 {
 
     public SRT_Movement_BlockDef CurrentBlock => GetCurrentBlockDef<SRT_Movement_BlockDef>();
+    private SRT_TrialLevel SrtTrialLevel = GameObject.Find("ControlLevels").GetComponent<SRT_TrialLevel>();
     public List<AudioClip> AudioClips;
     public SliderControl SliderControl;
     public CaterpillarControl catControl;
-    [FormerlySerializedAs("movementBlockFirst")] public int movementMod;
-    
+    public int movementMod;
+
+    public string movementType;
     // public SRT_SimpleTrialData SimpleTrialData;
     public override void DefineControlLevel()
     {
@@ -96,11 +98,17 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
         BlockFeedback.AddUniversalInitializationMethod(() =>
         {
             if (BlockCount % movementMod == 0)
+            {
                 taskInstructions_Level.postVideoSlideFolderPath =
                     GetTaskDef<SRT_Movement_TaskDef>().InterBlockMovementSlidePath;
+                movementType = "move";
+            }
             else
+            {
                 taskInstructions_Level.postVideoSlideFolderPath =
                     GetTaskDef<SRT_Movement_TaskDef>().InterBlockNoMovementSlidePath;
+                movementType = "still";
+            }
 
             taskInstructions_Level.minSlideDelay = 0;
             taskInstructions_Level.firstSlideDelay = 10;
