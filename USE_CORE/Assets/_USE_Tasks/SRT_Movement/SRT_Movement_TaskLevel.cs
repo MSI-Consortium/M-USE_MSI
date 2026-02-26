@@ -102,6 +102,9 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
                 taskInstructions_Level.postVideoSlideFolderPath =
                     GetTaskDef<SRT_Movement_TaskDef>().InterBlockNoMovementSlidePath;
 
+            taskInstructions_Level.minSlideDelay = 0;
+            taskInstructions_Level.firstSlideDelay = 10;
+
             blockFeedbackFinished = false;
             taskInstructions_Level.preVideoSlideFolderPath = "";
             taskInstructions_Level.videoPath = GetTaskDef<SRT_Movement_TaskDef>().InterBlockVideoPath;

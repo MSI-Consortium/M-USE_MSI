@@ -18,6 +18,8 @@ public class SlidePlayer_Level : ControlLevel
 
     List<StimDef> slides = new List<StimDef>();
     private bool slidesLoaded = false;
+    public float minSlideDelay = 0f;
+    public float firstSlideDelay = 0f;
     
     public override void DefineControlLevel()
     {
@@ -28,8 +30,10 @@ public class SlidePlayer_Level : ControlLevel
         bool imgSlides = false;
         bool textSlides = false;
 
-        
-        
+
+        float slideOnsetTime = 0f;
+
+        bool buttonPressed = false, firstSlide = true;
         LoadSlides.AddUniversalInitializationMethod(() =>
         {
             slidesLoaded = false;
@@ -38,16 +42,27 @@ public class SlidePlayer_Level : ControlLevel
             textSlides = slideText != null && slideText.Count > 0;
             StartCoroutine(LoadAllSlides());
         });
-        LoadSlides.SpecifyTermination(()=> slidesLoaded, PlaySlide);
+        LoadSlides.SpecifyTermination(() => slidesLoaded, PlaySlide, () =>
+        {
+            buttonPressed = false;
+            firstSlide = true;
+        });
 
-
-        bool buttonPressed = false;
+        State Successor = null;
         PlaySlide.AddUniversalInitializationMethod(() =>
         {
+            slideOnsetTime = Time.time;
             buttonPressed = false;
             if (imgSlides)
             {
                 slides[0].ToggleVisibility(true);
+            }
+
+            if (slides.Count == 1)
+                Successor = null;
+            else
+            {
+                Successor = PlaySlide;
             }
         });
         PlaySlide.AddUpdateMethod(() =>
@@ -57,23 +72,23 @@ public class SlidePlayer_Level : ControlLevel
                 buttonPressed = true;
             }
         });
+        // PlaySlide.SpecifyTermination(
+        //     () =>  buttonPressed && slides.Count > 1 && Time.time - slideOnsetTime >= minSlideDelay, () => PlaySlide, () =>
+        //     {
+        //         if (imgSlides)
+        //         {
+        //             slides[0].DestroyStimGameObject();
+        //             slides.RemoveAt(0);
+        //             imgSlides = slidePaths.Count != 0;
+        //         }
+        //         if (textSlides)
+        //         {
+        //             slideText.RemoveAt(0);
+        //             textSlides = slideText.Count != 0;
+        //         }
+        //     });
         PlaySlide.SpecifyTermination(
-            () => buttonPressed && slides.Count > 1, () => PlaySlide, () =>
-            {
-                if (imgSlides)
-                {
-                    slides[0].DestroyStimGameObject();
-                    slides.RemoveAt(0);
-                    imgSlides = slidePaths.Count != 0;
-                }
-                if (textSlides)
-                {
-                    slideText.RemoveAt(0);
-                    textSlides = slideText.Count != 0;
-                }
-            });
-        PlaySlide.SpecifyTermination(
-            () => buttonPressed && slides.Count == 1, () => null, () =>
+            () => CheckSlideEnd(buttonPressed, firstSlide, slideOnsetTime), () => Successor, () =>
             {
                 if (imgSlides)
                 {
@@ -85,8 +100,22 @@ public class SlidePlayer_Level : ControlLevel
                     slideText.RemoveAt(0);
                 }
 
-                slides = null;
+                // slides = null;
             });
+        
+        ControlLevelTermination(()=> slides= null);
+    }
+
+    private bool CheckSlideEnd(bool buttonPressed, bool firstSlide, float slideOnset)
+    {
+        if(firstSlide && firstSlideDelay > 0)
+            if (Time.time - slideOnset > firstSlideDelay)
+                return true;
+
+        if (buttonPressed && Time.time - slideOnset > minSlideDelay)
+            return true;
+
+        return false;
     }
 
     private IEnumerator LoadAllSlides()

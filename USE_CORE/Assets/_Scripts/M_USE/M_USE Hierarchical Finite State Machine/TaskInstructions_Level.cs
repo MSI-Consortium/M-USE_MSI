@@ -11,6 +11,9 @@ public class TaskInstructions_Level : ControlLevel
     public Camera taskCam;
     public SliderFBController SliderFbController;
     public VideoPlayer vp;
+    public float minSlideDelay = 0f;
+    public float firstSlideDelay = 0f;
+
     
     public override void DefineControlLevel()
     {
@@ -31,6 +34,8 @@ public class TaskInstructions_Level : ControlLevel
         
         PreVideoSlides.AddUniversalInitializationMethod(() =>
         {
+            slideLevel.minSlideDelay = minSlideDelay;
+            slideLevel.firstSlideDelay = firstSlideDelay;
             if (!string.IsNullOrEmpty(preVideoSlideFolderPath))
             {
                 // slideLevel.Terminated = false;
