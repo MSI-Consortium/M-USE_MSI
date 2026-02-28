@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,12 +11,12 @@ using UnityEngine.Networking;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using Random = UnityEngine.Random;
 
 public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
 {
 
     public SRT_Movement_BlockDef CurrentBlock => GetCurrentBlockDef<SRT_Movement_BlockDef>();
-    private SRT_TrialLevel SrtTrialLevel = GameObject.Find("ControlLevels").GetComponent<SRT_TrialLevel>();
     public List<AudioClip> AudioClips;
     public SliderControl SliderControl;
     public CaterpillarControl catControl;
@@ -25,6 +26,7 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
     // public SRT_SimpleTrialData SimpleTrialData;
     public override void DefineControlLevel()
     {
+        // SrtTrialLevel = GameObject.Find("ControlLevels").GetComponent<SRT_TrialLevel>();
         DefineBlockData();
         
         Add_ControlLevel_InitializationMethod(() =>
@@ -32,26 +34,34 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
             USE_CoordinateConverter.SetEyeDistance(60);
             //initialize serrial port for tactile stims
             //Session.SerialPortController.Initialize();
-            catControl.InitCat(GetTaskDef<SRT_Movement_TaskDef>().CaterpillarPort);
+            if (!String.IsNullOrEmpty(GetTaskDef<SRT_Movement_TaskDef>().CaterpillarPort))
+                catControl.InitCat(GetTaskDef<SRT_Movement_TaskDef>().CaterpillarPort);
             
             //check subject id to determine which block type is first
             string lastLetter = Session.SubjectID.Substring(Session.SubjectID.Length - 1);
             int lastDigit;
             if (int.TryParse(lastLetter, out lastDigit))
             {
-                movementMod = lastDigit % 2 + 1;
+                movementMod = lastDigit % 2;
             }
             else
             {
-                movementMod = Random.Range(1, 3);
+                movementMod = Random.Range(0, 2);
                 
             }
-            if (movementMod == 1)
+
+            if (movementMod == 0)
+            {
                 GetTaskDef<SRT_Movement_TaskDef>().TaskInstructionsPostVideoSlidesFolderPath =
                     GetTaskDef<SRT_Movement_TaskDef>().InterBlockMovementSlidePath;
+                movementType = "move";
+            }
             else
+            {
                 GetTaskDef<SRT_Movement_TaskDef>().TaskInstructionsPostVideoSlidesFolderPath =
                     GetTaskDef<SRT_Movement_TaskDef>().InterBlockNoMovementSlidePath;
+                movementType = "still";
+            }
         });
         
         SetupBlock.AddDefaultInitializationMethod(() =>
@@ -97,7 +107,7 @@ public class SRT_Movement_TaskLevel : ControlLevel_Task_Template
         // int startFrame = 0;
         BlockFeedback.AddUniversalInitializationMethod(() =>
         {
-            if (BlockCount % movementMod == 0)
+            if (BlockCount % 2 != movementMod)
             {
                 taskInstructions_Level.postVideoSlideFolderPath =
                     GetTaskDef<SRT_Movement_TaskDef>().InterBlockMovementSlidePath;

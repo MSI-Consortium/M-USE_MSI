@@ -20,6 +20,7 @@ public class SlidePlayer_Level : ControlLevel
     private bool slidesLoaded = false;
     public float minSlideDelay = 0f;
     public float firstSlideDelay = 0f;
+    private bool firstSlide;
     
     public override void DefineControlLevel()
     {
@@ -33,7 +34,7 @@ public class SlidePlayer_Level : ControlLevel
 
         float slideOnsetTime = 0f;
 
-        bool buttonPressed = false, firstSlide = true;
+        bool buttonPressed = false;
         LoadSlides.AddUniversalInitializationMethod(() =>
         {
             slidesLoaded = false;
@@ -88,7 +89,7 @@ public class SlidePlayer_Level : ControlLevel
         //         }
         //     });
         PlaySlide.SpecifyTermination(
-            () => CheckSlideEnd(buttonPressed, firstSlide, slideOnsetTime), () => Successor, () =>
+            () => CheckSlideEnd(buttonPressed, slideOnsetTime), () => Successor, () =>
             {
                 if (imgSlides)
                 {
@@ -106,14 +107,20 @@ public class SlidePlayer_Level : ControlLevel
         ControlLevelTermination(()=> slides= null);
     }
 
-    private bool CheckSlideEnd(bool buttonPressed, bool firstSlide, float slideOnset)
+    private bool CheckSlideEnd(bool buttonPressed, float slideOnset)
     {
         if(firstSlide && firstSlideDelay > 0)
             if (Time.time - slideOnset > firstSlideDelay)
+            {
+                firstSlide = false;
                 return true;
+            }
 
         if (buttonPressed && Time.time - slideOnset > minSlideDelay)
+        {
+            firstSlide = false;
             return true;
+        }
 
         return false;
     }
