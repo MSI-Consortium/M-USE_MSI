@@ -116,7 +116,7 @@ public class SlidePlayer_Level : ControlLevel
                 return true;
             }
 
-        if (buttonPressed && Time.time - slideOnset > minSlideDelay)
+        else if (buttonPressed && Time.time - slideOnset > minSlideDelay)
         {
             firstSlide = false;
             return true;

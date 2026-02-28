@@ -42,8 +42,6 @@ public static class Session
 {
     public static bool WebBuild;
     public static bool Using2DStim;
-    
-    
     public static bool SingleDisplayBuild = true;
     public static bool SkipIntros = true;
     public static bool UseDefaultLocalPaths = true;
