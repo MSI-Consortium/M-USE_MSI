@@ -52,7 +52,7 @@ public class SlidePlayer_Level : ControlLevel
         State Successor = null;
         PlaySlide.AddUniversalInitializationMethod(() =>
         {
-            slideOnsetTime = Time.time;
+            //slideOnsetTime = Time.time;
             buttonPressed = false;
             if (imgSlides)
             {
@@ -89,7 +89,7 @@ public class SlidePlayer_Level : ControlLevel
         //         }
         //     });
         PlaySlide.SpecifyTermination(
-            () => CheckSlideEnd(buttonPressed, slideOnsetTime), () => Successor, () =>
+            () => CheckSlideEnd(buttonPressed, PlaySlide.TimingInfo.StartTimeAbsolute), () => Successor, () =>
             {
                 if (imgSlides)
                 {
@@ -116,7 +116,7 @@ public class SlidePlayer_Level : ControlLevel
                 return true;
             }
 
-        else if (buttonPressed && Time.time - slideOnset > minSlideDelay)
+        if (buttonPressed && Time.time - slideOnset > minSlideDelay)
         {
             firstSlide = false;
             return true;

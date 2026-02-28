@@ -24,7 +24,6 @@ public class SliderControl : MonoBehaviour
                 AnimationStarted = true;
             }
             float progress = (Time.time - AnimationStartTime) / AnimationDuration;
-            Debug.Log("Current Value = " + Slider.value + ", Target Value: " + TargetValue);
             Slider.value = Mathf.Lerp(Slider.value, TargetValue, progress);
             if (Math.Abs(Slider.value - TargetValue) <= 0.01)
             {

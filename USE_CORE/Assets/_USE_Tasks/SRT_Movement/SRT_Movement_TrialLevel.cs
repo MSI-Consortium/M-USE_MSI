@@ -442,7 +442,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
             GameObject stimgo = TrialStims[0].stimDefs[0].StimGameObject;
             RectTransform rt = stimgo.GetComponent<RectTransform>();
             Vector2 StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
-                "monitordva", 60).Value;
+                "monitordva", 110).Value;
             
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, StimSizePixels[0]);//TrialStims[0].stimDefs[0].StimSizePixels[0]);
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, StimSizePixels[1]);//TrialStims[0].stimDefs[0].StimSizePixels[1]);

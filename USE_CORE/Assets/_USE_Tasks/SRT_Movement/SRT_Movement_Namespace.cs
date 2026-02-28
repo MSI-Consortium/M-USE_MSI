@@ -140,10 +140,10 @@ namespace SRT_Movement_Namespace
                 if (AudioStimIndices.Length > 0)
                 {
                     MakeSRTTrial(null, Random.Range(0, AudioStimIndices.Length), null);
-                    if (VisualStimIndices.Length > 0)
+                    if (TactileStimIndices.Length > 0)
                     {
-                        MakeSRTTrial(Random.Range(0, VisualStimIndices.Length),
-                            Random.Range(0, AudioStimIndices.Length), null);
+                        MakeSRTTrial( null,
+                            Random.Range(0, AudioStimIndices.Length), Random.Range(0, TactileStimIndices.Length));
                     }
                 }
 
