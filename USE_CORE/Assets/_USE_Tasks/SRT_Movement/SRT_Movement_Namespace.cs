@@ -36,6 +36,7 @@ namespace SRT_Movement_Namespace
         public float VisualDelayOnVtTrials;
         public float TactileDelayOnTaTrials;
         public string CaterpillarPort;
+        public float EyeToScreenDistance;
     }
 
     public class SRT_Movement_BlockDef : BlockDef

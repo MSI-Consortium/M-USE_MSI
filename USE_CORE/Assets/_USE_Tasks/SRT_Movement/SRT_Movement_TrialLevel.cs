@@ -231,6 +231,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
         StimPrep.AddTimer(() => audioToVisualDelay, () => StimPresentation);
         StimPrep.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback);
 
+        StimPresentation.StateInitializationFinished += StimOnset;
         StimPresentation.AddUpdateMethod(() =>
         {
 
@@ -419,7 +420,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
 
     }
 
-    private void PrepareVisualTactileStim(object sender, EventArgs e)
+    private void StimOnset(object sender, EventArgs e)
     {
         string lslstring = "1";
 
@@ -442,7 +443,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
             GameObject stimgo = TrialStims[0].stimDefs[0].StimGameObject;
             RectTransform rt = stimgo.GetComponent<RectTransform>();
             Vector2 StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
-                "monitordva", 110).Value;
+                "monitordva", GetTaskDef<SRT_Movement_TaskDef>().EyeToScreenDistance).Value;
             
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, StimSizePixels[0]);//TrialStims[0].stimDefs[0].StimSizePixels[0]);
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, StimSizePixels[1]);//TrialStims[0].stimDefs[0].StimSizePixels[1]);
