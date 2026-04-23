@@ -33,6 +33,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
     private AudioClip _audioClip;
     private StimDef targetStimDef;
     private StimGroup fixCross;
+    private StimGroup availableStims;
     private int consecutiveLongTrials, consecutiveShortTrials = 0;
     private int maxConsecutiveLongTrials, maxConsecutiveShortTrials;
     private bool rtWarningTriggered;
@@ -128,7 +129,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
 
             rtWarningTriggered = false;
             fixCross.ToggleVisibility(true);
-            if (CurrentTrial.AudioStim_Index != null)
+            if (CurrentTrial.AudioStim_Index != null && availableStims.stimDefs[CurrentTrial.AudioStim_Index.Value].FileName != "placeholder.cat")
                 _audioSource = targetStimDef.AddAudioSource();
             if (CurrentTrial.VisualStim_Index == null)
                 TrialModality = 1;
@@ -223,12 +224,16 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         VisualTactileStimPresentation.AddTimer(()=>CurrentTrial.Stim_Dur, Response, () =>
         {
             //send tactile stim off signal
-            // catControl.TurnTactileStimOff();
+            catControl.StimOff("tac");
+            catControl.StimOff("vis");
+            catControl.StimOff("aud");
         });
         VisualTactileStimPresentation.SpecifyTermination(() => !string.IsNullOrEmpty(ResponseString), Feedback, ()=>
         {
             //send tactile stim off signal
-            // catControl.TurnTactileStimOff();
+            catControl.StimOff("tac");
+            catControl.StimOff("vis");
+            catControl.StimOff("aud");
         });
         
         Response.AddDefaultInitializationMethod(()=>
@@ -298,8 +303,11 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
     private void PlaySound(object sender, EventArgs e)
     {
         if (CurrentTrial.AudioStim_Index != null)
-            targetStimDef.StimGameObject.GetComponent<AudioSource>().PlayOneShot(CurrentTaskLevel.AudioClips[
-                CurrentTrial.AudioStim_Index.Value - CurrentTaskLevel.CurrentBlock.AudioStimIndices.Min()]);
+            if (availableStims.stimDefs[CurrentTrial.AudioStim_Index.Value].FileName != "placeholder.cat")
+                targetStimDef.StimGameObject.GetComponent<AudioSource>().PlayOneShot(CurrentTaskLevel.AudioClips[
+                    CurrentTrial.AudioStim_Index.Value - CurrentTaskLevel.CurrentBlock.AudioStimIndices.Min()]);
+            else
+                catControl.StimOn("aud");
         if (CurrentTrial.TactileStim_Index != null)
         {
             //trigger tactile stim
@@ -319,7 +327,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         if (CurrentTrial.TactileStim_Index != null)
         {
             lslstring += (CurrentTrial.TactileStim_Index + 1);
-            // catControl.TurnTactileStimOn();
+            catControl.StimOn("tac");
         }
         else
             lslstring += 0;
@@ -327,13 +335,20 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         if (CurrentTrial.VisualStim_Index != null)
         {
             lslstring += (CurrentTrial.VisualStim_Index + 1);
-            GameObject stimgo = TrialStims[0].stimDefs[0].StimGameObject;
-            RectTransform rt = stimgo.GetComponent<RectTransform>();
-            Vector2 StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
-                "monitordva", 60).Value;
-            
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, StimSizePixels[0]);//TrialStims[0].stimDefs[0].StimSizePixels[0]);
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, StimSizePixels[1]);//TrialStims[0].stimDefs[0].StimSizePixels[1]);
+            if (availableStims.stimDefs[CurrentTrial.VisualStim_Index.Value].FileName != "placeholder.cat")
+            {
+                GameObject stimgo = TrialStims[0].stimDefs[0].StimGameObject;
+                RectTransform rt = stimgo.GetComponent<RectTransform>();
+                Vector2 StimSizePixels = USE_CoordinateConverter.GetMonitorPixel(new Vector2(CurrentTrial.VisualStimDVA, CurrentTrial.VisualStimDVA),
+                    "monitordva", 60).Value;
+                
+                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, StimSizePixels[0]);//TrialStims[0].stimDefs[0].StimSizePixels[0]);
+                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, StimSizePixels[1]);//TrialStims[0].stimDefs[0].StimSizePixels[1]);
+            }
+            else
+            {
+                catControl.StimOn("vis");
+            }
         }
         else
             lslstring += 0;
@@ -346,10 +361,10 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
         //Define StimGroups consisting of StimDefs whose gameobjects will be loaded at TrialLevel_SetupTrial and 
         //destroyed at TrialLevel_Finish
 
-        StimGroup availableStims = Session.UsingDefaultConfigs ? PrefabStims : ExternalStims;
+        availableStims = Session.UsingDefaultConfigs ? PrefabStims : ExternalStims;
 
 
-        if (CurrentTrial.VisualStim_Index != null)
+        if (CurrentTrial.VisualStim_Index != null && availableStims.stimDefs[CurrentTrial.VisualStim_Index.Value].FileName != "placeholder.cat")
         {
             StimGroup visStims = new StimGroup("VisStim", availableStims, new List<int> { CurrentTrial.VisualStim_Index.Value });
             visStims.SetLocations(new List<Vector3> { CurrentTrial.VisualStim_Loc });
@@ -369,7 +384,7 @@ public class SRT_TrialLevel : ControlLevel_Trial_Template
 
             TrialStims.Add(visStims);
         }
-        if (CurrentTrial.AudioStim_Index != null)
+        if (CurrentTrial.AudioStim_Index != null && availableStims.stimDefs[CurrentTrial.AudioStim_Index.Value].FileName != "placeholder.cat")
         {
             StimGroup audStims = new StimGroup("AudStims");
             audStims.AddStims(new GameObject("AudioStim"));

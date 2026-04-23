@@ -198,6 +198,8 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
             tactileStimTriggered = false;
             RT = null;
             ResponseString = "";
+            
+            catControl.StimOn("Tac");
 
             //Need to rework to handle AV, VT, AT trials
             // audioToVisualDelay = CurrentTrial.AudioStim_Index == null
@@ -222,6 +224,7 @@ public class SRT_Movement_TrialLevel : ControlLevel_Trial_Template
             if (CurrentTrial.TactileStim_Index != null &&
                 Time.time - PreStim.TimingInfo.StartTimeAbsolute >= audioToTactileDelay && !tactileStimTriggered)
             {
+                Debug.Log("Trigger tactile stim#############################################");
                 tactileStimTriggered = true;
                 catControl.StimOn("Tac");
             }

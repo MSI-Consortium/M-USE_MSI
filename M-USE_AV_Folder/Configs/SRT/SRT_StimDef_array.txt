@@ -6,4 +6,6 @@ StimIndex	FileName	StimType	StimFreq
 4	beepC2.wav	Audio	0
 5	beepG.wav	Audio	0
 6	white_plus_sign.png	Visual	0
-7	placeholder.cat	Tactile	100
+7	placeholder.cat	Audio	4000
+8	placeholder.cat	Tactile	100
+9	placeholder.cat	Visual	100

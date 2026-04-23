@@ -242,8 +242,6 @@ public static class USE_CoordinateConverter
     }
     private static Vector2? MonitorDVAToMonitorPixel(Vector2? monitorDVA)
     {
-        Debug.Log("PIXELS PER DEGREE: " + pixelsPerDegree);
-        Debug.Log("monitorDVA: " + monitorDVA);
         MonitorPixel = monitorDVA * pixelsPerDegree;
         return MonitorPixel;
     }
